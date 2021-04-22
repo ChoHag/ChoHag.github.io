@@ -1,0 +1,12 @@
+# Editor detritus and backups
+*~
+*.bak
+*.new
+*.old
+*.orig
+.*.sw[pon]
+.dir-locals.el
+.#*
+\#*
+
+tmp/
