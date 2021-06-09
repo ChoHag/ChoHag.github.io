@@ -1,11 +1,11 @@
-/*500:*/
-#line 9401 "lossless.w"
+/*518:*/
+#line 9820 "lossless.w"
 
 #include "lossless.h"
 
 int
 main(int argc,
-char**argv __unused)
+char**argv ll_unused)
 {
 char wbuf[BUFFER_SEGMENT]= {0};
 vm_init();
@@ -31,4 +31,4 @@ printf("Interrupted");
 return EXIT_SUCCESS;
 }
 
-/*:500*/
+/*:518*/

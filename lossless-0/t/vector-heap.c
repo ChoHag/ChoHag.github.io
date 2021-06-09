@@ -1,16 +1,16 @@
-/*283:*/
-#line 5357 "lossless.w"
+/*287:*/
+#line 5431 "lossless.w"
 
 #define LLT_NOINIT
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 5359 "lossless.w"
+/*:258*/
+#line 5433 "lossless.w"
 
 
 enum llt_Grow_Vector_Pool_result{
@@ -28,12 +28,12 @@ cell*VECTOR;
 cell*save_VECTOR;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -49,8 +49,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -67,8 +67,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -82,12 +82,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -113,8 +113,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -122,8 +122,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -136,7 +136,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -146,12 +146,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 5376 "lossless.w"
+/*:263*/
+#line 5450 "lossless.w"
 
 
-/*284:*/
-#line 5388 "lossless.w"
+/*288:*/
+#line 5462 "lossless.w"
 
 void
 llt_Grow_Vector_Pool_prepare(llt_Fixture*fix)
@@ -166,8 +166,8 @@ Vectors_Poolsize= fix->Poolsize;
 Vectors_Segment= fix->Segment;
 }
 
-/*:284*//*285:*/
-#line 5402 "lossless.w"
+/*:288*//*289:*/
+#line 5476 "lossless.w"
 
 void
 llt_Grow_Vector_Pool_destroy(llt_Fixture*fix)
@@ -179,8 +179,8 @@ Vectors_Poolsize= 0;
 Vectors_Segment= HEAP_SEGMENT;
 }
 
-/*:285*//*286:*/
-#line 5413 "lossless.w"
+/*:289*//*290:*/
+#line 5487 "lossless.w"
 
 void
 llt_Grow_Vector_Pool_act(llt_Fixture*fix)
@@ -194,8 +194,8 @@ Allocate_Success= -1;
 memcpy(&Goto_Begin,&save_jmp,sizeof(jmp_buf));
 }
 
-/*:286*//*287:*/
-#line 5426 "lossless.w"
+/*:290*//*291:*/
+#line 5500 "lossless.w"
 
 boolean
 llt_Grow_Vector_Pool_test(llt_Fixture*fix)
@@ -204,8 +204,8 @@ boolean ok;
 char buf[TEST_BUFSIZE]= {0};
 switch(fix->expect){
 case LLT_GROW_VECTOR_POOL_SUCCESS:
-/*288:*/
-#line 5443 "lossless.w"
+/*292:*/
+#line 5517 "lossless.w"
 
 ok= tap_ok(Vectors_Poolsize==(fix->Poolsize+fix->Segment),
 fpmsgf("Vectors_Poolsize is increased"));
@@ -216,13 +216,13 @@ fpmsgf("VECTOR is not NULL"));
 tap_more(ok,!bcmp(VECTOR,fix->save_VECTOR,sizeof(cell)*fix->Poolsize),
 fpmsgf("VECTOR heap is unchanged"));
 
-/*:288*/
-#line 5434 "lossless.w"
+/*:292*/
+#line 5508 "lossless.w"
 
 break;
 case LLT_GROW_VECTOR_POOL_FAIL:
-/*289:*/
-#line 5453 "lossless.w"
+/*293:*/
+#line 5527 "lossless.w"
 
 ok= tap_ok(Vectors_Poolsize==fix->Poolsize,
 fpmsgf("Vectors_Poolsize is not increased"));
@@ -231,16 +231,16 @@ fpmsgf("Vectors_Segment is not increased"));
 tap_more(ok,VECTOR==fix->VECTOR,
 fpmsgf("VECTOR is unchanged"));
 
-/*:289*/
-#line 5437 "lossless.w"
+/*:293*/
+#line 5511 "lossless.w"
 
 break;
 }
 return ok;
 }
 
-/*:287*//*290:*/
-#line 5461 "lossless.w"
+/*:291*//*294:*/
+#line 5535 "lossless.w"
 
 llt_buffer*
 llt_Grow_Vector_Pool_fix(const char*name)
@@ -261,8 +261,8 @@ fix->Segment= HEAP_SEGMENT;
 return r;
 }
 
-/*:290*//*291:*/
-#line 5481 "lossless.w"
+/*:294*//*295:*/
+#line 5555 "lossless.w"
 
 llt_buffer*
 llt_Grow_Vector_Pool__Empty_Success(void)
@@ -270,8 +270,8 @@ llt_Grow_Vector_Pool__Empty_Success(void)
 return llt_Grow_Vector_Pool_fix(__func__);
 }
 
-/*:291*//*292:*/
-#line 5488 "lossless.w"
+/*:295*//*296:*/
+#line 5562 "lossless.w"
 
 llt_buffer*
 llt_Grow_Vector_Pool__Empty_Fail(void)
@@ -282,8 +282,8 @@ llt_buffer*r= llt_Grow_Vector_Pool_fix(__func__);
 return r;
 }
 
-/*:292*//*293:*/
-#line 5498 "lossless.w"
+/*:296*//*297:*/
+#line 5572 "lossless.w"
 
 void
 llt_Grow_Vector_Pool__fill(llt_Fixture*fix)
@@ -294,8 +294,8 @@ for(i= 0;i<(fix->Poolsize*sizeof(cell))/sizeof(int);i++)
 *(((int*)fix->VECTOR)+i)= rand();
 }
 
-/*:293*//*294:*/
-#line 5508 "lossless.w"
+/*:297*//*298:*/
+#line 5582 "lossless.w"
 
 llt_buffer*
 llt_Grow_Vector_Pool__Full_Success(void)
@@ -306,8 +306,8 @@ llt_Grow_Vector_Pool__fill((llt_Fixture*)r->data);
 return r;
 }
 
-/*:294*//*295:*/
-#line 5518 "lossless.w"
+/*:298*//*299:*/
+#line 5592 "lossless.w"
 
 llt_buffer*
 llt_Grow_Vector_Pool__Full_Fail(void)
@@ -320,8 +320,8 @@ llt_Grow_Vector_Pool__fill((llt_Fixture*)r->data);
 return r;
 }
 
-/*:295*/
-#line 5378 "lossless.w"
+/*:299*/
+#line 5452 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -332,4 +332,4 @@ llt_Grow_Vector_Pool__Full_Fail,
 NULL
 };
 
-/*:283*/
+/*:287*/

@@ -1,21 +1,21 @@
-/*376:*/
-#line 7216 "lossless.w"
+/*380:*/
+#line 7291 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 7217 "lossless.w"
+/*:258*/
+#line 7292 "lossless.w"
 
 
 struct llt_Fixture{
 LLT_FIXTURE_HEADER;
-/*377:*/
-#line 7246 "lossless.w"
+/*381:*/
+#line 7321 "lossless.w"
 
 boolean custom_p;
 boolean env_found_p;
@@ -27,11 +27,11 @@ cell set_Acc;
 cell sym_mpft[4];
 boolean want_ex_p;
 
-/*:377*/
-#line 7221 "lossless.w"
+/*:381*/
+#line 7296 "lossless.w"
 
-/*378:*/
-#line 7260 "lossless.w"
+/*382:*/
+#line 7335 "lossless.w"
 
 boolean mutate_Acc_p;
 boolean mutate_Env_p;
@@ -47,11 +47,11 @@ int want_Ip;
 int want_Fp;
 int want_RTSp;
 
-/*:378*/
-#line 7222 "lossless.w"
+/*:382*/
+#line 7297 "lossless.w"
 
-/*379:*/
-#line 7279 "lossless.w"
+/*383:*/
+#line 7354 "lossless.w"
 
 cell backup_Env;
 llt_buffer*save_Acc;
@@ -65,17 +65,17 @@ jmp_buf save_goto;
 int save_Ip;
 int save_RTSp;
 
-/*:379*/
-#line 7223 "lossless.w"
+/*:383*/
+#line 7298 "lossless.w"
 
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -91,8 +91,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -109,8 +109,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -124,12 +124,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -155,8 +155,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -164,8 +164,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -178,7 +178,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -188,12 +188,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 7226 "lossless.w"
+/*:263*/
+#line 7301 "lossless.w"
 
 
-/*380:*/
-#line 7297 "lossless.w"
+/*384:*/
+#line 7372 "lossless.w"
 
 void
 llt_Interpreter_prepare(llt_Fixture*fix)
@@ -229,8 +229,8 @@ bcopy(Goto_Error,fix->save_goto,sizeof(jmp_buf));
 Error_Handler= btrue;
 }
 
-/*:380*//*381:*/
-#line 7332 "lossless.w"
+/*:384*//*385:*/
+#line 7407 "lossless.w"
 
 void
 llt_Interpreter_destroy(llt_Fixture*fix)
@@ -248,11 +248,11 @@ bcopy(fix->save_goto,Goto_Begin,sizeof(jmp_buf));
 Error_Handler= bfalse;
 }
 
-/*:381*//*382:*/
-#line 7349 "lossless.w"
+/*:385*//*386:*/
+#line 7424 "lossless.w"
 
 void
-llt_Interpreter_act(llt_Fixture*fix __unused)
+llt_Interpreter_act(llt_Fixture*fix ll_unused)
 {
 
 fix->had_ex_p= bfalse;
@@ -262,8 +262,8 @@ else
 fix->had_ex_p= btrue;
 }
 
-/*:382*//*383:*/
-#line 7365 "lossless.w"
+/*:386*//*387:*/
+#line 7440 "lossless.w"
 
 boolean
 llt_Interpreter_test(llt_Fixture*fix)
@@ -309,8 +309,8 @@ fpmsgf("an error was not raised"));
 return all;
 }
 
-/*:383*//*384:*/
-#line 7410 "lossless.w"
+/*:387*//*388:*/
+#line 7485 "lossless.w"
 
 void
 llt_Interpreter_fix(llt_Fixture*fix,
@@ -326,8 +326,8 @@ fix->mutate_Ip_p= btrue;
 fix->want_Ip= 1;
 }
 
-/*:384*//*391:*/
-#line 7446 "lossless.w"
+/*:388*//*395:*/
+#line 7521 "lossless.w"
 
 void
 llt_Interpreter__OP_CYCLE_prepare(llt_Fixture*fix)
@@ -340,8 +340,8 @@ rts_push(sym("question?"));
 llt_Interpreter_prepare(fix);
 }
 
-/*:391*//*392:*/
-#line 7462 "lossless.w"
+/*:395*//*396:*/
+#line 7537 "lossless.w"
 
 boolean
 llt_Interpreter__OP_CYCLE_test(llt_Fixture*fix)
@@ -363,8 +363,8 @@ fpmsgf("the next stack item is correct"));
 return ok;
 }
 
-/*:392*//*393:*/
-#line 7483 "lossless.w"
+/*:396*//*397:*/
+#line 7558 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_CYCLE(void)
@@ -385,8 +385,8 @@ fix[1].suffix= "stack in use";
 return r;
 }
 
-/*:393*//*395:*/
-#line 7509 "lossless.w"
+/*:397*//*399:*/
+#line 7584 "lossless.w"
 
 void
 llt_Interpreter__OP_ENV_MUTATE_M_prepare(llt_Fixture*fix)
@@ -405,8 +405,8 @@ sym(LLT_TEST_VARIABLE),sym(LLT_VALUE_FISH),FALSE);
 llt_Interpreter_prepare(fix);
 }
 
-/*:395*//*396:*/
-#line 7527 "lossless.w"
+/*:399*//*400:*/
+#line 7602 "lossless.w"
 
 boolean
 llt_Interpreter__OP_ENV_MUTATE_M_test(llt_Fixture*fix)
@@ -420,8 +420,8 @@ tap_more(ok,found==fix->sym_mpft[1],fpmsgf("the value is set"));
 return ok;
 }
 
-/*:396*//*397:*/
-#line 7540 "lossless.w"
+/*:400*//*401:*/
+#line 7615 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_ENV_MUTATE_M(void)
@@ -448,8 +448,8 @@ fix[1].env_new_p= TRUE;
 return r;
 }
 
-/*:397*//*402:*/
-#line 7578 "lossless.w"
+/*:401*//*406:*/
+#line 7653 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_HALT(void)
@@ -461,8 +461,8 @@ llt_Interpreter_fix((llt_Fixture*)r->data,__func__);
 return r;
 }
 
-/*:402*//*403:*/
-#line 7591 "lossless.w"
+/*:406*//*407:*/
+#line 7666 "lossless.w"
 
 void
 llt_Interpreter__OP_JUMP_prepare(llt_Fixture*fix)
@@ -474,8 +474,8 @@ Ip= 0;
 llt_Interpreter_prepare(fix);
 }
 
-/*:403*//*404:*/
-#line 7602 "lossless.w"
+/*:407*//*408:*/
+#line 7677 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_JUMP(void)
@@ -488,8 +488,8 @@ llt_Interpreter_fix((llt_Fixture*)r->data,__func__);
 return r;
 }
 
-/*:404*//*405:*/
-#line 7617 "lossless.w"
+/*:408*//*409:*/
+#line 7692 "lossless.w"
 
 void
 llt_Interpreter__OP_JUMP_FALSE_prepare(llt_Fixture*fix)
@@ -502,8 +502,8 @@ Acc= fix->set_Acc;
 llt_Interpreter_prepare(fix);
 }
 
-/*:405*//*406:*/
-#line 7629 "lossless.w"
+/*:409*//*410:*/
+#line 7704 "lossless.w"
 
 boolean
 llt_Interpreter__OP_JUMP_FALSE_test(llt_Fixture*fix)
@@ -519,8 +519,8 @@ fpmsgf("error is unexpected void"));
 return ok;
 }
 
-/*:406*//*407:*/
-#line 7644 "lossless.w"
+/*:410*//*411:*/
+#line 7719 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_JUMP_FALSE(void)
@@ -554,8 +554,8 @@ fix[3].mutate_Acc_p= btrue;
 return r;
 }
 
-/*:407*//*408:*/
-#line 7680 "lossless.w"
+/*:411*//*412:*/
+#line 7755 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_JUMP_TRUE(void)
@@ -575,8 +575,8 @@ fix[2].want_Ip= i;
 return r;
 }
 
-/*:408*//*414:*/
-#line 7712 "lossless.w"
+/*:412*//*418:*/
+#line 7787 "lossless.w"
 
 void
 llt_Interpreter__OP_LOOKUP_prepare(llt_Fixture*fix)
@@ -589,8 +589,8 @@ Acc= sym(LLT_VALUE_MARCO);
 llt_Interpreter_prepare(fix);
 }
 
-/*:414*//*415:*/
-#line 7724 "lossless.w"
+/*:418*//*419:*/
+#line 7799 "lossless.w"
 
 void
 llt_Interpreter__OP_LOOKUP_destroy(llt_Fixture*fix)
@@ -599,8 +599,8 @@ Env= fix->backup_Env;
 VMS= NIL;
 }
 
-/*:415*//*416:*/
-#line 7732 "lossless.w"
+/*:419*//*420:*/
+#line 7807 "lossless.w"
 
 boolean
 llt_Interpreter__OP_LOOKUP_test(llt_Fixture*fix)
@@ -618,8 +618,8 @@ fpmsgf("error is unbound marco?"));
 return ok;
 }
 
-/*:416*//*417:*/
-#line 7749 "lossless.w"
+/*:420*//*421:*/
+#line 7824 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_LOOKUP(void)
@@ -644,8 +644,8 @@ fix[1].want_Ip= -1;
 return r;
 }
 
-/*:417*//*419:*/
-#line 7780 "lossless.w"
+/*:421*//*423:*/
+#line 7855 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_NOOP(void)
@@ -655,8 +655,8 @@ llt_Interpreter_fix((llt_Fixture*)r->data,__func__);
 return r;
 }
 
-/*:419*//*431:*/
-#line 7820 "lossless.w"
+/*:423*//*435:*/
+#line 7895 "lossless.w"
 
 void
 llt_Interpreter__OP_SNOC_prepare(llt_Fixture*fix)
@@ -665,8 +665,8 @@ Acc= cons(sym(LLT_VALUE_FISH),int_new(42));
 llt_Interpreter_prepare(fix);
 }
 
-/*:431*//*432:*/
-#line 7828 "lossless.w"
+/*:435*//*436:*/
+#line 7903 "lossless.w"
 
 boolean
 llt_Interpreter__OP_SNOC_test(llt_Fixture*fix)
@@ -680,8 +680,8 @@ fpmsgf("The cdr is in RTS"));
 return ok;
 }
 
-/*:432*//*433:*/
-#line 7841 "lossless.w"
+/*:436*//*437:*/
+#line 7916 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_SNOC(void)
@@ -700,8 +700,8 @@ fix[0].mutate_RTSp_p= btrue;
 return r;
 }
 
-/*:433*//*434:*/
-#line 7862 "lossless.w"
+/*:437*//*438:*/
+#line 7937 "lossless.w"
 
 void
 llt_Interpreter__OP_SWAP_prepare(llt_Fixture*fix)
@@ -714,8 +714,8 @@ Acc= sym("question?");
 llt_Interpreter_prepare(fix);
 }
 
-/*:434*//*435:*/
-#line 7874 "lossless.w"
+/*:438*//*439:*/
+#line 7949 "lossless.w"
 
 boolean
 llt_Interpreter__OP_SWAP_test(llt_Fixture*fix)
@@ -732,8 +732,8 @@ fpmsgf("Acc is correct"));
 return ok;
 }
 
-/*:435*//*436:*/
-#line 7890 "lossless.w"
+/*:439*//*440:*/
+#line 7965 "lossless.w"
 
 llt_buffer*
 llt_Interpreter__OP_SWAP(void)
@@ -755,8 +755,8 @@ fix[1].suffix= "stack in use";
 return r;
 }
 
-/*:436*/
-#line 7228 "lossless.w"
+/*:440*/
+#line 7303 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -773,4 +773,4 @@ llt_Interpreter__OP_SWAP,
 NULL
 };
 
-/*:376*/
+/*:380*/

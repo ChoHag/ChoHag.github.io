@@ -1,15 +1,15 @@
-/*439:*/
-#line 7927 "lossless.w"
+/*443:*/
+#line 8002 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 7928 "lossless.w"
+/*:258*/
+#line 8003 "lossless.w"
 
 
 struct llt_Fixture{
@@ -23,12 +23,12 @@ cell want_ex;
 cell save_Acc;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -44,8 +44,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -62,8 +62,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -77,12 +77,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -108,8 +108,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -117,8 +117,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -131,7 +131,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -141,12 +141,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 7941 "lossless.w"
+/*:263*/
+#line 8016 "lossless.w"
 
 
-/*440:*/
-#line 7950 "lossless.w"
+/*444:*/
+#line 8026 "lossless.w"
 
 void
 llt_Compiler_prepare(llt_Fixture*fix)
@@ -155,18 +155,18 @@ Tmp_Test= fix->src_val= read_cstring(fix->src_exp);
 Error_Handler= btrue;
 }
 
-/*:440*//*441:*/
-#line 7958 "lossless.w"
+/*:444*//*445:*/
+#line 8034 "lossless.w"
 
 void
-llt_Compiler_destroy(llt_Fixture*fix __unused)
+llt_Compiler_destroy(llt_Fixture*fix ll_unused)
 {
 Tmp_Test= NIL;
 Error_Handler= bfalse;
 }
 
-/*:441*//*442:*/
-#line 7966 "lossless.w"
+/*:445*//*446:*/
+#line 8042 "lossless.w"
 
 void
 llt_Compiler_act(llt_Fixture*fix)
@@ -179,8 +179,8 @@ else
 fix->had_ex_p= btrue;
 }
 
-/*:442*//*443:*/
-#line 7978 "lossless.w"
+/*:446*//*447:*/
+#line 8054 "lossless.w"
 
 boolean
 llt_Compiler_compare_bytecode(cell bc,
@@ -222,8 +222,8 @@ free(w);
 return r;
 }
 
-/*:443*//*444:*/
-#line 8019 "lossless.w"
+/*:447*//*448:*/
+#line 8095 "lossless.w"
 
 boolean
 llt_Compiler_test(llt_Fixture*fix)
@@ -232,7 +232,7 @@ char buf[TEST_BUFSIZE]= {0};
 boolean ok,match;
 if(fix->want==NULL){
 ok= tap_ok(fix->had_ex_p,fpmsgf("an error was raised"));
-tap_more(ok,ex_id(Acc)==fix->want_ex,
+tap_again(ok,ex_id(Acc)==fix->want_ex,
 fpmsgf("the error type is correct"));
 }else{
 ok= tap_ok(!fix->had_ex_p,
@@ -249,8 +249,8 @@ fpmsgf("the correct bytecode is generated"));
 return ok;
 }
 
-/*:444*//*445:*/
-#line 8044 "lossless.w"
+/*:448*//*449:*/
+#line 8120 "lossless.w"
 
 void
 llt_Compiler_fix(llt_Fixture*fix,
@@ -265,8 +265,8 @@ fix->want= NULL;
 fix->want_ex= NIL;
 }
 
-/*:445*//*446:*/
-#line 8120 "lossless.w"
+/*:449*//*450:*/
+#line 8196 "lossless.w"
 
 void
 llt_Compiler__Eval_prepare(llt_Fixture*fix)
@@ -275,8 +275,8 @@ llt_Compiler_prepare(fix);
 car(fix->src_val)= env_search(Root,sym("eval"));
 }
 
-/*:446*//*447:*/
-#line 8128 "lossless.w"
+/*:450*//*451:*/
+#line 8204 "lossless.w"
 
 llt_buffer*
 llt_Compiler__Eval(void)
@@ -291,8 +291,8 @@ llt_Compiler_fix(fix+i,__func__);
 fix[i].prepare= llt_Compiler__Eval_prepare;
 }
 i= -1;
-/*448:*/
-#line 8148 "lossless.w"
+/*452:*/
+#line 8224 "lossless.w"
 
 fix[++i].src_exp= "(eval)";
 fix[i].suffix= "eval";
@@ -308,8 +308,8 @@ fix[++i].src_exp= "(eval 4 2 ?)";
 fix[i].suffix= "eval x x x";
 fix[i].want_ex= Sym_ERR_ARITY_SYNTAX;
 
-/*:448*//*449:*/
-#line 8165 "lossless.w"
+/*:452*//*453:*/
+#line 8241 "lossless.w"
 
 fix[++i].src_exp= "(eval 42)";
 fix[i].suffix= "eval <constant>";
@@ -322,8 +322,8 @@ fix[i].suffix= "eval <complex expression>";
 fix[i].want= CAT2(LLTCC_EVAL_FIRST_COMPLEX("build","an expression"),
 LLTCC_EVAL_ONEARG());
 
-/*:449*//*450:*/
-#line 8179 "lossless.w"
+/*:453*//*454:*/
+#line 8255 "lossless.w"
 
 fix[++i].src_exp= "(eval 42 24)";
 fix[i].suffix= "eval <constant> <constant>";
@@ -339,8 +339,8 @@ fix[i].want= CAT4(LLTCC_EVAL_SECOND_COMPLEX("get","an environment"),
 LLTCC_EVAL_VALIDATE("16"),
 LLTCC_EVAL_FIRST_QUOTE("42"),LLTCC_EVAL_TWOARG());
 
-/*:450*//*451:*/
-#line 8196 "lossless.w"
+/*:454*//*455:*/
+#line 8272 "lossless.w"
 
 fix[++i].src_exp= "(eval marco? 24)";
 fix[i].suffix= "eval <symbol> <constant>";
@@ -356,8 +356,8 @@ fix[i].want= CAT4(LLTCC_EVAL_SECOND_COMPLEX("a","new environment"),
 LLTCC_EVAL_VALIDATE("16"),
 LLTCC_EVAL_FIRST_LOOKUP("marco?"),LLTCC_EVAL_TWOARG());
 
-/*:451*//*452:*/
-#line 8213 "lossless.w"
+/*:455*//*456:*/
+#line 8289 "lossless.w"
 
 fix[++i].src_exp= "(eval (get an expression) 24)";
 fix[i].suffix= "eval <complex expression> <constant>";
@@ -376,19 +376,270 @@ LLTCC_EVAL_VALIDATE("16"),
 LLTCC_EVAL_FIRST_COMPLEX("once","more"),
 LLTCC_EVAL_TWOARG());
 
-/*:452*/
-#line 8142 "lossless.w"
+/*:456*/
+#line 8218 "lossless.w"
 
 return r;
 }
 
-/*:447*/
-#line 7943 "lossless.w"
+/*:451*//*457:*/
+#line 8367 "lossless.w"
+
+void
+llt_Compiler__Lambda_prepare(llt_Fixture*fix)
+{
+llt_Compiler_prepare(fix);
+car(fix->src_val)= env_search(Root,sym("lambda"));
+}
+
+/*:457*//*458:*/
+#line 8380 "lossless.w"
+
+boolean
+llt_Compiler__Lambda_test(llt_Fixture*fix)
+{
+char buf[TEST_BUFSIZE]= {0};
+boolean fok,ok;
+cell f,fex,frv;
+ok= llt_Compiler_test(fix);
+if(fix->want){
+fex= cadr(fix->src_val);
+frv= vector_ref(fix->ret_val,1);
+fok= btrue;
+for(f= fex;pair_p(f);f= cdr(f))
+if(!special_p(f)&&llt_contains_p(frv,f)){
+fok= bfalse;
+break;
+}
+tap_more(ok,fok,fpmsgf("the formals do not share cells"));
+}
+return ok;
+}
+
+/*:458*//*459:*/
+#line 8402 "lossless.w"
+
+void
+llt_Compiler__Lambda_fix(llt_Fixture*fix,
+const char*name)
+{
+llt_Compiler_fix(fix,name);
+fix->prepare= llt_Compiler__Lambda_prepare;
+fix->test= llt_Compiler__Lambda_test;
+}
+
+/*:459*//*460:*/
+#line 8416 "lossless.w"
+
+llt_buffer*llt_Compiler__Lambda_build(const char*,llt_buffer*,
+char*,char*,char*);
+
+/*:460*//*461:*/
+#line 8431 "lossless.w"
+
+llt_buffer*
+llt_Compiler__Lambda(void)
+{
+llt_buffer*fbuf;
+fbuf= llt_alloc(1,llt_Fixture);
+llt_Compiler__Lambda_fix((llt_Fixture*)fbuf->data,__func__);
+bfix(fbuf).src_exp= "(lambda)";
+bfix(fbuf).suffix= "no arguments";
+bfix(fbuf).want_ex= Sym_ERR_ARITY_SYNTAX;
+/*463:*/
+#line 8473 "lossless.w"
+
+lltfix_lambda_fail_formals("O");
+lltfix_lambda_fail_formals("OS");
+lltfix_lambda_fail_formals("SO");
+lltfix_lambda_fail_formals("SD");
+lltfix_lambda_fail_formals("OSS");
+lltfix_lambda_fail_formals("SOS");
+lltfix_lambda_fail_formals("SSO");
+lltfix_lambda_fail_formals("SOO");
+lltfix_lambda_fail_formals("OSO");
+lltfix_lambda_fail_formals("OOS");
+lltfix_lambda_fail_formals("OSD");
+lltfix_lambda_fail_formals("SOD");
+lltfix_lambda_fail_formals("SDO");
+
+/*:463*/
+#line 8441 "lossless.w"
+
+/*464:*/
+#line 8494 "lossless.w"
+
+lltfix_lambda_fail_body("S","improper body (1 item)");
+lltfix_lambda_fail_body("SS","improper body (2 items)");
+lltfix_lambda_fail_body("SSS","improper body (3 items)");
+
+/*:464*/
+#line 8442 "lossless.w"
+
+/*462:*/
+#line 8452 "lossless.w"
+
+lltfix_lambda_success("");
+lltfix_lambda_success("I");
+lltfix_lambda_success("S");
+lltfix_lambda_success("II");
+lltfix_lambda_success("IS");
+lltfix_lambda_success("SI");
+lltfix_lambda_success("SS");
+lltfix_lambda_success("III");
+lltfix_lambda_success("IIS");
+lltfix_lambda_success("ISI");
+lltfix_lambda_success("ISS");
+lltfix_lambda_success("SII");
+lltfix_lambda_success("SIS");
+lltfix_lambda_success("SSI");
+lltfix_lambda_success("SSS");
+
+/*:462*/
+#line 8443 "lossless.w"
+
+return fbuf;
+}
+
+/*:461*//*465:*/
+#line 8519 "lossless.w"
+
+llt_buffer*
+llt_Compiler__Lambda_build(const char*name,
+llt_buffer*fbuf,
+char*formals,
+char*body,
+char*desc)
+{
+char*o0,*o1,*s= "xyz";
+int i;
+if(!*formals){
+/*466:*/
+#line 8542 "lossless.w"
+
+llt_grow(fbuf,1);
+llt_Compiler__Lambda_fix(&bfix(fbuf),name);
+if(!*body){
+bfix(fbuf).src_exp= "(lambda ())";
+bfix(fbuf).suffix= "lambda ()";
+bfix(fbuf).want= llt_cat(LLTCC_LAMBDA_SUCCESS,"()")->data;
+}else{
+/*467:*/
+#line 8556 "lossless.w"
+
+bfix(fbuf).suffix= desc;
+ERR_OOM_P(bfix(fbuf).src_exp= calloc(LLT_BUFLET_SEGMENT,1));
+sprintf(bfix(fbuf).src_exp,"(lambda ()");
+o0= bfix(fbuf).src_exp+strlen(bfix(fbuf).src_exp);
+while(*body++){
+if(!*body){
+straffix(o0,' ');
+straffix(o0,'.');
+}
+straffix(o0,' ');
+straffix(o0,*s++);
+}
+straffix(o0,')');
+bfix(fbuf).want_ex= Sym_ERR_ARITY_SYNTAX;
+
+/*:467*/
+#line 8550 "lossless.w"
+
+}
+
+/*:466*/
+#line 8530 "lossless.w"
+
+return fbuf;
+}
+/*468:*/
+#line 8577 "lossless.w"
+
+llt_grow(fbuf,2);
+llt_Compiler__Lambda_fix(&bfix0(fbuf),name);
+llt_Compiler__Lambda_fix(&bfix1(fbuf),name);
+ERR_OOM_P(bfix0(fbuf).src_exp= calloc(LLT_BUFLET_SEGMENT,1));
+bfix0(fbuf).suffix= bfix0(fbuf).src_exp+LLT_BUFLET_SLICE*1;
+bfix1(fbuf).src_exp= bfix0(fbuf).src_exp+LLT_BUFLET_SLICE*2;
+bfix1(fbuf).suffix= bfix0(fbuf).src_exp+LLT_BUFLET_SLICE*3;
+sprintf(bfix0(fbuf).src_exp,"(lambda ");
+sprintf(bfix1(fbuf).src_exp,"(lambda ");
+o0= bfix0(fbuf).src_exp+8;
+o1= bfix1(fbuf).src_exp+8;
+/*469:*/
+#line 8606 "lossless.w"
+
+if(!formals[1])
+straffix(o0,'(');
+else
+straffix_both(o0,o1,'(');
+for(i= 0;formals[i];i++){
+if(i&&!formals[i+1]){
+straffix(o1,' ');
+straffix(o1,'.');
+}
+/*470:*/
+#line 8628 "lossless.w"
+
+if(i)
+straffix_both(o0,o1,' ');
+switch(formals[i]){
+case'S':
+straffix_both(o0,o1,*s++);
+break;
+case'D':
+straffix_both(o0,o1,*(s-1));
+bfix0(fbuf).want_ex= bfix1(fbuf).want_ex= Sym_ERR_ARITY_SYNTAX;
+break;
+case'I':
+straffix_both(o0,o1,'#');
+straffix_both(o0,o1,'f');
+break;
+case'O':
+straffix_both(o0,o1,'#');
+straffix_both(o0,o1,'t');
+bfix0(fbuf).want_ex= bfix1(fbuf).want_ex= Sym_ERR_ARITY_SYNTAX;
+break;
+}
+
+/*:470*/
+#line 8616 "lossless.w"
+
+}
+if(!formals[1])
+straffix(o0,')');
+else
+straffix_both(o0,o1,')');
+
+/*:469*/
+#line 8589 "lossless.w"
+
+if(null_p(bfix(fbuf).want_ex)){
+bfix0(fbuf).want
+= llt_cat(LLTCC_LAMBDA_SUCCESS,bfix0(fbuf).src_exp+8)->data;
+bfix1(fbuf).want
+= llt_cat(LLTCC_LAMBDA_SUCCESS,bfix1(fbuf).src_exp+8)->data;
+}
+straffix_both(o0,o1,')');
+strlcpy(bfix0(fbuf).suffix,bfix0(fbuf).src_exp+1,
+strlen(bfix0(fbuf).src_exp)-1);
+strlcpy(bfix1(fbuf).suffix,bfix1(fbuf).src_exp+1,
+strlen(bfix1(fbuf).src_exp)-1);
+
+/*:468*/
+#line 8533 "lossless.w"
+
+return fbuf;
+}
+
+/*:465*/
+#line 8018 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
 llt_Compiler__Eval,
+llt_Compiler__Lambda,
 NULL
 };
 
-/*:439*/
+/*:443*/

@@ -1,15 +1,15 @@
-/*329:*/
-#line 6216 "lossless.w"
+/*333:*/
+#line 6290 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 6217 "lossless.w"
+/*:258*/
+#line 6291 "lossless.w"
 
 
 struct llt_Fixture{
@@ -21,12 +21,12 @@ size_t expect;
 int ret_val;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -42,8 +42,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -60,8 +60,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -75,12 +75,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -106,8 +106,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -115,8 +115,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -129,7 +129,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -139,12 +139,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 6228 "lossless.w"
+/*:263*/
+#line 6302 "lossless.w"
 
 
-/*330:*/
-#line 6238 "lossless.w"
+/*334:*/
+#line 6312 "lossless.w"
 
 size_t
 llt_GC_Sweep_mark_m(cell c)
@@ -162,8 +162,8 @@ count+= llt_GC_Sweep_mark_m(vector_ref(c,i));
 return count;
 }
 
-/*:330*//*331:*/
-#line 6259 "lossless.w"
+/*:334*//*335:*/
+#line 6333 "lossless.w"
 
 void
 llt_GC_Sweep_prepare(llt_Fixture*fix)
@@ -176,8 +176,8 @@ vms_push(cons(NIL,NIL));
 cons(NIL,vms_pop());
 }
 
-/*:331*//*332:*/
-#line 6273 "lossless.w"
+/*:335*//*336:*/
+#line 6347 "lossless.w"
 
 void
 llt_GC_Sweep_destroy(llt_Fixture*fix)
@@ -186,8 +186,8 @@ free(fix->safe_buf);
 vm_init_imp();
 }
 
-/*:332*//*333:*/
-#line 6281 "lossless.w"
+/*:336*//*337:*/
+#line 6355 "lossless.w"
 
 void
 llt_GC_Sweep_act(llt_Fixture*fix)
@@ -195,8 +195,8 @@ llt_GC_Sweep_act(llt_Fixture*fix)
 fix->ret_val= sweep();
 }
 
-/*:333*//*334:*/
-#line 6288 "lossless.w"
+/*:337*//*338:*/
+#line 6362 "lossless.w"
 
 boolean
 llt_GC_Sweep_test(llt_Fixture*fix)
@@ -230,8 +230,8 @@ fpmsgf("the used cells are not in the free list"));
 return ok;
 }
 
-/*:334*//*335:*/
-#line 6321 "lossless.w"
+/*:338*//*339:*/
+#line 6395 "lossless.w"
 
 void
 llt_GC_Sweep_fix(llt_Fixture*fix,
@@ -245,8 +245,8 @@ fix->test= llt_GC_Sweep_test;
 fix->skip_gc_p= btrue;
 }
 
-/*:335*//*336:*/
-#line 6334 "lossless.w"
+/*:339*//*340:*/
+#line 6408 "lossless.w"
 
 llt_buffer*
 llt_GC_Sweep__Empty_Pool(void)
@@ -263,8 +263,8 @@ fix[1].suffix= "unused";
 return r;
 }
 
-/*:336*//*337:*/
-#line 6353 "lossless.w"
+/*:340*//*341:*/
+#line 6427 "lossless.w"
 
 void
 llt_GC_Sweep__Used_Pool_prepare(llt_Fixture*fix)
@@ -277,8 +277,8 @@ llt_GC_Sweep_prepare(fix);
 vms_pop();
 }
 
-/*:337*//*338:*/
-#line 6365 "lossless.w"
+/*:341*//*342:*/
+#line 6439 "lossless.w"
 
 llt_buffer*
 llt_GC_Sweep__Used_Pool(void)
@@ -289,8 +289,8 @@ llt_GC_Sweep_fix((llt_Fixture*)r->data,__func__);
 return r;
 }
 
-/*:338*/
-#line 6230 "lossless.w"
+/*:342*/
+#line 6304 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -299,4 +299,4 @@ llt_GC_Sweep__Used_Pool,
 NULL
 };
 
-/*:329*/
+/*:333*/

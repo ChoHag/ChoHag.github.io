@@ -1,15 +1,15 @@
-/*354:*/
-#line 6694 "lossless.w"
+/*358:*/
+#line 6769 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 6695 "lossless.w"
+/*:258*/
+#line 6770 "lossless.w"
 
 
 struct llt_Fixture{
@@ -35,12 +35,12 @@ cell sym_val[3];
 boolean want_ex_p;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -56,8 +56,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -74,8 +74,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -89,12 +89,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -120,8 +120,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -129,8 +129,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -143,7 +143,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -153,12 +153,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 6720 "lossless.w"
+/*:263*/
+#line 6795 "lossless.w"
 
 
-/*355:*/
-#line 6733 "lossless.w"
+/*359:*/
+#line 6808 "lossless.w"
 
 void
 llt_Environments_prepare(llt_Fixture*fix)
@@ -169,8 +169,8 @@ int i;
 fix->sym_mpf[0]= sym(LLT_VALUE_MARCO);
 fix->sym_mpf[1]= sym(LLT_VALUE_POLO);
 fix->sym_mpf[2]= sym(LLT_VALUE_FISH);
-/*356:*/
-#line 6753 "lossless.w"
+/*360:*/
+#line 6828 "lossless.w"
 
 vms_push(Env);
 Env= e[0]= env_empty();
@@ -190,12 +190,12 @@ snprintf(buf,TEST_BUFSIZE,"test-value-%d",i+1);
 fix->sym_val[i]= sym(buf);
 }
 
-/*:356*/
-#line 6743 "lossless.w"
+/*:360*/
+#line 6818 "lossless.w"
 
 if(fix->stack){
-/*357:*/
-#line 6774 "lossless.w"
+/*361:*/
+#line 6849 "lossless.w"
 
 rts_push(fix->sym_val[fix->stack-1]);
 if(!fix->proper_p)
@@ -215,19 +215,19 @@ fix->formals);
 vms_set(fix->formals);
 }
 
-/*:357*/
-#line 6745 "lossless.w"
+/*:361*/
+#line 6820 "lossless.w"
 
 }
 bcopy(fix->save_goto,Goto_Error,sizeof(jmp_buf));
 Error_Handler= btrue;
 }
 
-/*:355*//*358:*/
-#line 6793 "lossless.w"
+/*:359*//*362:*/
+#line 6868 "lossless.w"
 
 void
-llt_Environments_destroy(llt_Fixture*fix __unused)
+llt_Environments_destroy(llt_Fixture*fix ll_unused)
 {
 Env= ((cell*)fix->save_Env->data)[0];
 Acc= VMS= NIL;
@@ -236,8 +236,8 @@ bcopy(fix->save_goto,Goto_Error,sizeof(jmp_buf));
 Error_Handler= bfalse;
 }
 
-/*:358*//*359:*/
-#line 6806 "lossless.w"
+/*:362*//*363:*/
+#line 6881 "lossless.w"
 
 void
 llt_Environments_fix(llt_Fixture*fix,
@@ -250,8 +250,8 @@ fix->act= NULL;
 fix->test= NULL;
 }
 
-/*:359*//*360:*/
-#line 6841 "lossless.w"
+/*:363*//*364:*/
+#line 6916 "lossless.w"
 
 void
 llt_Environments__Search_act(llt_Fixture*fix)
@@ -259,8 +259,8 @@ llt_Environments__Search_act(llt_Fixture*fix)
 fix->ret_val= fix->search_fn(Env,fix->sym_mpf[0]);
 }
 
-/*:360*//*361:*/
-#line 6848 "lossless.w"
+/*:364*//*365:*/
+#line 6923 "lossless.w"
 
 boolean
 llt_Environments__Search_test(llt_Fixture*fix)
@@ -274,8 +274,8 @@ return tap_ok(undefined_p(fix->ret_val),
 fpmsgf("variable is not found"));
 }
 
-/*:361*//*362:*/
-#line 6863 "lossless.w"
+/*:365*//*366:*/
+#line 6938 "lossless.w"
 
 llt_buffer*
 llt_Environments__Search_Single_Layer(void)
@@ -306,8 +306,8 @@ fix[2].expect= fix[3].expect= TRUE;
 return r;
 }
 
-/*:362*//*363:*/
-#line 6896 "lossless.w"
+/*:366*//*367:*/
+#line 6971 "lossless.w"
 
 llt_buffer*
 llt_Environments__Search_Multi_Simple(void)
@@ -343,8 +343,8 @@ fix[4].expect= fix[5].expect= FALSE;
 return r;
 }
 
-/*:363*//*364:*/
-#line 6934 "lossless.w"
+/*:367*//*368:*/
+#line 7009 "lossless.w"
 
 llt_buffer*
 llt_Environments__Search_Multi_Masked(void)
@@ -379,8 +379,8 @@ fix[2].layer[0]= fix[3].layer[0]= sym(LLT_VALUE_FISH);
 return r;
 }
 
-/*:364*//*365:*/
-#line 6980 "lossless.w"
+/*:368*//*369:*/
+#line 7055 "lossless.w"
 
 void
 llt_Environments__Set_act(llt_Fixture*fix)
@@ -392,8 +392,8 @@ else
 fix->had_ex_p= btrue;
 }
 
-/*:365*//*366:*/
-#line 6994 "lossless.w"
+/*:369*//*370:*/
+#line 7069 "lossless.w"
 
 boolean
 llt_Environments__Set_test(llt_Fixture*fix)
@@ -422,8 +422,8 @@ fpmsgf("the variable has the correct value"));
 return ok;
 }
 
-/*:366*//*367:*/
-#line 7026 "lossless.w"
+/*:370*//*371:*/
+#line 7101 "lossless.w"
 
 llt_buffer*
 llt_Environments__Set(void)
@@ -464,8 +464,8 @@ fix[5].expect= UNDEFINED;
 return r;
 }
 
-/*:367*//*368:*/
-#line 7107 "lossless.w"
+/*:371*//*372:*/
+#line 7182 "lossless.w"
 
 void
 llt_Environments__Lift_Stack_act(llt_Fixture*fix)
@@ -473,8 +473,8 @@ llt_Environments__Lift_Stack_act(llt_Fixture*fix)
 fix->ret_val= env_lift_stack(Env,fix->formals);
 }
 
-/*:368*//*369:*/
-#line 7114 "lossless.w"
+/*:372*//*373:*/
+#line 7189 "lossless.w"
 
 boolean
 llt_Environments__Lift_Stack_test(llt_Fixture*fix)
@@ -516,8 +516,8 @@ fpmsgf("1st argument is lifted"));
 return ok;
 }
 
-/*:369*//*370:*/
-#line 7155 "lossless.w"
+/*:373*//*374:*/
+#line 7230 "lossless.w"
 
 llt_buffer*
 llt_Environments__Lift_Stack(void)
@@ -567,8 +567,8 @@ fix[i].null_pos= 2;
 return r;
 }
 
-/*:370*/
-#line 6722 "lossless.w"
+/*:374*/
+#line 6797 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -580,4 +580,4 @@ llt_Environments__Set,
 NULL
 };
 
-/*:354*/
+/*:358*/

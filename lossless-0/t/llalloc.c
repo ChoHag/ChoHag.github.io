@@ -1,9 +1,9 @@
-/*222:*/
-#line 4321 "lossless.w"
+/*224:*/
+#line 4356 "lossless.w"
 
 #define LL_ALLOCATE fallible_reallocarray
 /*4:*/
-#line 85 "lossless.w"
+#line 87 "lossless.w"
 
 #include <ctype.h> 
 #include <limits.h> 
@@ -18,7 +18,7 @@
 #endif
 
 /*:4*/
-#line 4323 "lossless.w"
+#line 4358 "lossless.w"
 
 void*fallible_reallocarray(void*,size_t,size_t);
 #define LL_TEST
@@ -32,4 +32,4 @@ size_t size)
 return Allocate_Success--?reallocarray(ptr,nmemb,size):NULL;
 }
 
-/*:222*/
+/*:224*/

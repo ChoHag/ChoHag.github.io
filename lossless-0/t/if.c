@@ -1,16 +1,16 @@
-/*475:*/
-#line 8578 "lossless.w"
+/*493:*/
+#line 8997 "lossless.w"
 
-/*261:*/
-#line 4942 "lossless.w"
+/*265:*/
+#line 5016 "lossless.w"
 
 #define LL_TEST 1
 #include "lossless.h"
 void test_main(void);
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 volatile boolean first= btrue;
 vm_init();
@@ -27,8 +27,8 @@ tap_plan(0);
 return EXIT_SUCCESS;
 }
 
-/*:261*/
-#line 8579 "lossless.w"
+/*:265*/
+#line 8998 "lossless.w"
 
 void
 test_main(void)
@@ -47,8 +47,8 @@ tcons= sym("test-consequent");
 tq= sym("test-query");
 marco= sym("marco?");
 polo= sym("polo!");
-/*476:*/
-#line 8606 "lossless.w"
+/*494:*/
+#line 9025 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(polo),NIL);
@@ -59,8 +59,8 @@ interpret();
 tap_ok(symbol_p(Acc)&&Acc==polo,tmsgf("symbol?"));
 test_vm_state_full(prefix);
 
-/*:476*//*477:*/
-#line 8618 "lossless.w"
+/*:494*//*495:*/
+#line 9037 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(marco),NIL);
@@ -71,8 +71,8 @@ interpret();
 tap_ok(void_p(Acc),tmsgf("void?"));
 test_vm_state_full(prefix);
 
-/*:477*//*478:*/
-#line 8630 "lossless.w"
+/*:495*//*496:*/
+#line 9049 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(polo),NIL);
@@ -84,8 +84,8 @@ interpret();
 tap_ok(symbol_p(Acc)&&Acc==marco,tmsgf("symbol?"));
 test_vm_state_full(prefix);
 
-/*:478*//*479:*/
-#line 8643 "lossless.w"
+/*:496*//*497:*/
+#line 9062 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(polo),NIL);
@@ -97,11 +97,11 @@ interpret();
 tap_ok(symbol_p(Acc)&&Acc==polo,tmsgf("symbol?"));
 test_vm_state_full(prefix);
 
-/*:479*/
-#line 8597 "lossless.w"
+/*:497*/
+#line 9016 "lossless.w"
 
-/*480:*/
-#line 8660 "lossless.w"
+/*498:*/
+#line 9079 "lossless.w"
 
 t= env_layer(Tmp_Test= Root);
 Root= env_empty();
@@ -118,8 +118,8 @@ env_set(Env,talt,fcorrect,btrue);
 env_set(Env,tcons,tcorrect,btrue);
 env_set(Env,tq,VOID,btrue);
 
-/*:480*//*481:*/
-#line 8679 "lossless.w"
+/*:498*//*499:*/
+#line 9098 "lossless.w"
 
 vm_reset();
 env_set(Env,tq,FALSE,bfalse);
@@ -134,8 +134,8 @@ tap_ok(symbol_p(Acc)&&Acc==fcorrect,tmsgf("symbol?"));
 test_vm_state_normal(prefix);
 tap_ok(Env==t,tmsgf("(unchanged? Env)"));
 
-/*:481*//*482:*/
-#line 8693 "lossless.w"
+/*:499*//*500:*/
+#line 9112 "lossless.w"
 
 vm_reset();
 env_set(Env,tq,TRUE,bfalse);
@@ -150,14 +150,14 @@ tap_ok(symbol_p(Acc)&&Acc==tcorrect,tmsgf("symbol?"));
 test_vm_state_normal(prefix);
 tap_ok(Env==t,tmsgf("(unchanged? Env)"));
 
-/*:482*//*483:*/
-#line 8710 "lossless.w"
+/*:500*//*501:*/
+#line 9129 "lossless.w"
 
 Root= Tmp_Test;
 
-/*:483*/
-#line 8598 "lossless.w"
+/*:501*/
+#line 9017 "lossless.w"
 
 }
 
-/*:475*/
+/*:493*/

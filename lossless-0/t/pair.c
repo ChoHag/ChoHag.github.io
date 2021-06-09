@@ -1,16 +1,16 @@
-/*454:*/
-#line 8247 "lossless.w"
+/*472:*/
+#line 8666 "lossless.w"
 
-/*261:*/
-#line 4942 "lossless.w"
+/*265:*/
+#line 5016 "lossless.w"
 
 #define LL_TEST 1
 #include "lossless.h"
 void test_main(void);
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 volatile boolean first= btrue;
 vm_init();
@@ -27,8 +27,8 @@ tap_plan(0);
 return EXIT_SUCCESS;
 }
 
-/*:261*/
-#line 8248 "lossless.w"
+/*:265*/
+#line 8667 "lossless.w"
 
 void
 test_main(void)
@@ -40,8 +40,8 @@ char msg[TEST_BUFSIZE]= {0};
 marco= sym("marco?");
 polo= sym("polo!");
 water= sym("fish out of water!");
-/*455:*/
-#line 8274 "lossless.w"
+/*473:*/
+#line 8693 "lossless.w"
 
 vm_reset();
 Acc= read_cstring(prefix= "(cons 24 42)");
@@ -53,11 +53,11 @@ tap_again(ok,integer_p(car(Acc))&&int_value(cdr(Acc))==42,
 tmsgf("cdr"));
 test_vm_state_full(prefix);
 
-/*:455*/
-#line 8259 "lossless.w"
+/*:473*/
+#line 8678 "lossless.w"
 
-/*456:*/
-#line 8285 "lossless.w"
+/*474:*/
+#line 8704 "lossless.w"
 
 vm_reset();
 t= cons(int_new(42),polo);
@@ -68,11 +68,11 @@ interpret();
 tap_ok(integer_p(Acc)&&int_value(Acc)==42,tmsgf("integer?"));
 test_vm_state_full(prefix);
 
-/*:456*/
-#line 8260 "lossless.w"
+/*:474*/
+#line 8679 "lossless.w"
 
-/*457:*/
-#line 8295 "lossless.w"
+/*475:*/
+#line 8714 "lossless.w"
 
 vm_reset();
 Acc= cons(sym("cdr"),t);
@@ -81,11 +81,11 @@ interpret();
 tap_ok(symbol_p(Acc)&&Acc==polo,tmsgf("symbol?"));
 test_vm_state_full(prefix);
 
-/*:457*/
-#line 8261 "lossless.w"
+/*:475*/
+#line 8680 "lossless.w"
 
-/*458:*/
-#line 8303 "lossless.w"
+/*476:*/
+#line 8722 "lossless.w"
 
 vm_reset();
 t= cons(NIL,NIL);
@@ -95,8 +95,8 @@ interpret();
 tap_ok(true_p(Acc),tmsgf("true?"));
 test_vm_state_full(prefix);
 
-/*:458*//*459:*/
-#line 8312 "lossless.w"
+/*:476*//*477:*/
+#line 8731 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(polo),NIL);
@@ -106,8 +106,8 @@ interpret();
 tap_ok(false_p(Acc),tmsgf("false?"));
 test_vm_state_full(prefix);
 
-/*:459*//*460:*/
-#line 8321 "lossless.w"
+/*:477*//*478:*/
+#line 8740 "lossless.w"
 
 vm_reset();
 t= synquote_new(cons(NIL,NIL));
@@ -117,11 +117,11 @@ interpret();
 tap_ok(false_p(Acc),tmsgf("false?"));
 test_vm_state_full(prefix);
 
-/*:460*/
-#line 8262 "lossless.w"
+/*:478*/
+#line 8681 "lossless.w"
 
-/*461:*/
-#line 8330 "lossless.w"
+/*479:*/
+#line 8749 "lossless.w"
 
 vm_reset();
 Acc= cons(sym("pair?"),cons(NIL,NIL));
@@ -130,8 +130,8 @@ interpret();
 tap_ok(false_p(Acc),tmsgf("false?"));
 test_vm_state_full(prefix);
 
-/*:461*//*462:*/
-#line 8338 "lossless.w"
+/*:479*//*480:*/
+#line 8757 "lossless.w"
 
 vm_reset();
 t= cons(synquote_new(polo),NIL);
@@ -141,8 +141,8 @@ interpret();
 tap_ok(false_p(Acc),tmsgf("false?"));
 test_vm_state_full(prefix);
 
-/*:462*//*463:*/
-#line 8347 "lossless.w"
+/*:480*//*481:*/
+#line 8766 "lossless.w"
 
 vm_reset();
 t= synquote_new(cons(NIL,NIL));
@@ -152,11 +152,11 @@ interpret();
 tap_ok(true_p(Acc),tmsgf("true?"));
 test_vm_state_full(prefix);
 
-/*:463*/
-#line 8263 "lossless.w"
+/*:481*/
+#line 8682 "lossless.w"
 
-/*464:*/
-#line 8363 "lossless.w"
+/*482:*/
+#line 8782 "lossless.w"
 
 vm_reset();
 Tmp_Test= cons(marco,water);
@@ -172,11 +172,11 @@ tmsgf("(eq? (car T) 'polo!)"));
 tap_again(okok,symbol_p(cdr(Tmp_Test))&&cdr(Tmp_Test)==water,
 tmsgf("(eq? (cdr T) '|fish out of water!|)"));
 
-/*:464*/
-#line 8264 "lossless.w"
+/*:482*/
+#line 8683 "lossless.w"
 
-/*465:*/
-#line 8378 "lossless.w"
+/*483:*/
+#line 8797 "lossless.w"
 
 vm_reset();
 Tmp_Test= cons(water,marco);
@@ -192,9 +192,9 @@ tmsgf("(eq? (car T) '|fish out of water!|)"));
 tap_again(okok,symbol_p(cdr(Tmp_Test))&&cdr(Tmp_Test)==polo,
 tmsgf("(eq? (cdr T) 'polo!)"));
 
-/*:465*/
-#line 8265 "lossless.w"
+/*:483*/
+#line 8684 "lossless.w"
 
 }
 
-/*:454*/
+/*:472*/

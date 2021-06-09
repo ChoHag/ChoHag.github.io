@@ -1,8 +1,8 @@
 /*2:*/
-#line 67 "lossless.w"
+#line 68 "lossless.w"
 
 /*4:*/
-#line 85 "lossless.w"
+#line 87 "lossless.w"
 
 #include <ctype.h> 
 #include <limits.h> 
@@ -17,7 +17,41 @@
 #endif
 
 /*:4*/
-#line 68 "lossless.w"
+#line 69 "lossless.w"
+
+/*526:*/
+#line 9921 "lossless.w"
+
+#ifndef ll_noreturn
+#  ifdef __GNUC__ 
+#    define ll_noreturn __attribute__ ((__noreturn__))
+#  else
+#    ifdef _Noreturn
+#      define ll_noreturn _Noreturn
+#    else
+#      define ll_noreturn 
+#    endif
+#  endif
+#endif
+
+#ifndef ll_unused
+#  ifdef __GNUC__ 
+#    define ll_unused __attribute__ ((__unused__))
+#  else
+#    define ll_unused 
+#  endif
+#endif
+
+#ifndef reallocarray 
+#define reallocarray(o,n,s) realloc((o), (n) * (s))
+#endif
+
+#ifndef strlcpy
+#define strlcpy(d,s,l) ((size_t) snprintf((d), (l), "%s", (s)))
+#endif
+
+/*:526*/
+#line 70 "lossless.w"
 
 #define bfalse 0
 #define btrue 1
@@ -264,12 +298,19 @@ return-1; \
 #define ERR_ARITY_MISSING "missing"
 #define ERR_ARITY_SYNTAX "syntax"
 #define arity_error(e,c,a) error((e) ,cons((c) ,(a) ) ) 
+#define find_formal_duplicates(n,h) if(symbol_p(n) )  \
+for(cell d= (h) ;!null_p(d) ;d= cdr(d) )  \
+if(car(d) ==(n) )  \
+arity_error(ERR_ARITY_SYNTAX,op,args) ;
+#define bfixn(f,n) ((llt_Fixture*) ((f) ->data) ) [(n) ]
+#define bfix0(f) bfixn((f) ,(f) ->len-2) 
+#define bfix1(f) bfixn((f) ,(f) ->len-1) 
+#define bfix bfix1
 #define llt_alloc(l,t) llt_alloc_imp((l) ,sizeof(t) ) 
-#define llt_grow(o,l) ((o) = llt_grow_imp((o) ,(l) ) ) 
-#define llt_grow_by(o,d) ((o) = llt_grow_imp((o) ,(o) ->len+(d) ) ) 
+#define llt_grow(o,d) ((o) = llt_grow_imp((o) ,(o) ->len+(d) ) ) 
 #define llt_extend_serial(buf,by,off) do{ \
 llt_buffer*q= (by) ; \
-llt_grow_by((buf) ,q->len) ; \
+llt_grow((buf) ,q->len) ; \
 bcopy(q->data,(buf) ->data+((off) *q->size) ,q->len*q->size) ; \
 (off) += q->len; \
 free(q) ; \
@@ -279,7 +320,6 @@ free(q) ; \
 #define tap_again(t,r,m) tap_ok(((t) = ((t) &&(r) ) ) ,(m) )  \
 
 #define tap_more(t,r,m) (t) &= tap_ok((r) ,(m) ) 
-#define tap_or(p,m) if(!tap_ok((p) ,(m) ) ) 
 #define TEST_BUFSIZE 1024
 #define probe_push(n,o) do{ \
 vms_push(cons((o) ,NIL) ) ; \
@@ -344,6 +384,26 @@ CAT3(" OP_QUOTE ",xc," OP_LOOKUP") , \
 " OP_QUOTE unexpected OP_ERROR") 
 #define LLTCC_EVAL_ONEARG() " OP_COMPILE OP_RUN OP_RETURN "
 #define LLTCC_EVAL_TWOARG() " OP_COMPILE OP_RUN_THERE OP_RETURN "
+#define LLTCC_LAMBDA_SUCCESS "(OP_QUOTE %s OP_PUSH" \
+" OP_LAMBDA 7 OP_JUMP 10 OP_QUOTE #<> OP_RETURN" \
+" OP_RETURN)"
+#define lltfix_lambda_success(f)  \
+fbuf= llt_Compiler__Lambda_build(__func__,fbuf,(f) ,"",NULL) 
+#define lltfix_lambda_fail_formals(f)  \
+fbuf= llt_Compiler__Lambda_build(__func__,fbuf,(f) ,"",NULL) 
+#define lltfix_lambda_fail_body(b,d)  \
+fbuf= llt_Compiler__Lambda_build(__func__,fbuf,"",(b) ,(d) ) 
+#define LLT_BUFLET_SEGMENT 100
+#define LLT_BUFLET_SLICE (LLT_BUFLET_SEGMENT/4) 
+#define straffix(b,c) do{ \
+*(b) ++= (c) ; \
+*(b) = '\0'; \
+}while(0) 
+#define straffix_both(b0,b1,c) do{ \
+char _c= (c) ; \
+straffix((b0) ,_c) ; \
+straffix((b1) ,_c) ; \
+}while(0) 
 #define TEST_AB "(lambda x)"
 #define TEST_AB_PRINT "(lambda x ...)"
 #define TEST_AC "(lambda x (test!probe))"
@@ -397,10 +457,10 @@ TEST_ORO_INNER")"
 #define GOTO_FAIL "((lambda x (error fail)))"
 #define synquote_new(o) atom(Sym_SYNTAX_QUOTE,(o) ,FORMAT_SYNTAX) 
 
-#line 69 "lossless.w"
+#line 71 "lossless.w"
 
-/*144:*/
-#line 2747 "lossless.w"
+/*146:*/
+#line 2776 "lossless.w"
 
 enum{
 OP_APPLY,
@@ -444,54 +504,54 @@ OP_SYMBOL_P,
 OP_SYNTAX,
 OP_VOV,
 #ifdef LL_TEST
-/*244:*/
-#line 4633 "lossless.w"
+/*247:*/
+#line 4694 "lossless.w"
 
 OP_TEST_PROBE,
 
-/*:244*/
-#line 2790 "lossless.w"
+/*:247*/
+#line 2819 "lossless.w"
 
 #endif
 OPCODE_MAX
 };
 
-/*:144*//*145:*/
-#line 2799 "lossless.w"
+/*:146*//*147:*/
+#line 2828 "lossless.w"
 
 #ifndef LL_TEST
 enum{
 OP_TEST_UNDEFINED_BEHAVIOUR= 0xf00f,
-/*244:*/
-#line 4633 "lossless.w"
+/*247:*/
+#line 4694 "lossless.w"
 
 OP_TEST_PROBE,
 
-/*:244*/
-#line 2803 "lossless.w"
+/*:247*/
+#line 2832 "lossless.w"
 
 };
 #endif
 
-/*:145*//*241:*/
-#line 4602 "lossless.w"
+/*:147*//*244:*/
+#line 4662 "lossless.w"
 
 
 
 #define tmsgf(...)test_msgf(msg, prefix, __VA_ARGS__)
 
-/*:241*/
-#line 70 "lossless.w"
+/*:244*/
+#line 72 "lossless.w"
 
 /*5:*/
-#line 106 "lossless.w"
+#line 108 "lossless.w"
 
 typedef int32_t cell;
 typedef int boolean;
 typedef cell predicate;
 
 /*:5*//*90:*/
-#line 1566 "lossless.w"
+#line 1567 "lossless.w"
 
 typedef void(*native)(cell,cell,boolean);
 typedef struct{
@@ -499,16 +559,16 @@ char*name;
 native fn;
 }primitive;
 
-/*:90*//*146:*/
-#line 2807 "lossless.w"
+/*:90*//*148:*/
+#line 2836 "lossless.w"
 
 typedef struct{
 char*name;
 int nargs;
 }opcode;
 
-/*:146*//*227:*/
-#line 4370 "lossless.w"
+/*:148*//*229:*/
+#line 4410 "lossless.w"
 
 typedef struct{
 size_t len;
@@ -516,32 +576,32 @@ size_t size;
 char data[];
 }llt_buffer;
 
-/*:227*/
-#line 71 "lossless.w"
+/*:229*/
+#line 73 "lossless.w"
 
 /*8:*/
-#line 148 "lossless.w"
+#line 150 "lossless.w"
 
-void error_imp(char*,cell,cell)__dead;
+void ll_noreturn error_imp(char*,cell,cell);
 void warn(char*,cell);
 
 /*:8*//*14:*/
-#line 266 "lossless.w"
+#line 268 "lossless.w"
 
 void new_cells_segment(void);
 
 /*:14*//*22:*/
-#line 417 "lossless.w"
+#line 419 "lossless.w"
 
 cell atom(cell,cell,char);
 
 /*:22*//*27:*/
-#line 467 "lossless.w"
+#line 469 "lossless.w"
 
 void new_vector_segment(void);
 
 /*:27*//*36:*/
-#line 532 "lossless.w"
+#line 534 "lossless.w"
 
 cell vector_new(int,cell);
 cell vector_new_imp(int,boolean,cell);
@@ -549,7 +609,7 @@ cell vector_new_list(cell,int);
 cell vector_sub(cell,int,int,int,int,cell);
 
 /*:36*//*43:*/
-#line 639 "lossless.w"
+#line 641 "lossless.w"
 
 int gc(void);
 int gc_vectors(void);
@@ -557,7 +617,7 @@ void mark(cell);
 int sweep(void);
 
 /*:43*//*51:*/
-#line 855 "lossless.w"
+#line 857 "lossless.w"
 
 cell cts_pop(void);
 void cts_push(cell);
@@ -576,7 +636,7 @@ cell vms_ref(void);
 void vms_set(cell);
 
 /*:51*//*59:*/
-#line 1054 "lossless.w"
+#line 1056 "lossless.w"
 
 cell symbol(char*,boolean);
 void symbol_expand(void);
@@ -585,20 +645,20 @@ boolean symbol_same_p(cell,cell);
 cell symbol_steal(char*);
 
 /*:59*//*70:*/
-#line 1189 "lossless.w"
+#line 1191 "lossless.w"
 
 cell int_new_imp(int,cell);
 cell int_new(int);
 
 /*:70*//*73:*/
-#line 1222 "lossless.w"
+#line 1224 "lossless.w"
 
 int list_length(cell);
 predicate list_p(cell,predicate,cell*);
 cell list_reverse_m(cell,boolean);
 
 /*:73*//*81:*/
-#line 1380 "lossless.w"
+#line 1382 "lossless.w"
 
 cell env_here(cell,cell);
 cell env_lift_stack(cell,cell);
@@ -606,19 +666,19 @@ cell env_search(cell,cell);
 void env_set(cell,cell,cell,boolean);
 
 /*:81*//*88:*/
-#line 1539 "lossless.w"
+#line 1540 "lossless.w"
 
 cell closure_new_imp(char,cell,cell,cell,cell);
 
 /*:88*//*97:*/
-#line 1686 "lossless.w"
+#line 1687 "lossless.w"
 
 void vm_init_imp(void);
 void vm_prepare_imp(void);
 void vm_reset(void);
 
 /*:97*//*104:*/
-#line 1764 "lossless.w"
+#line 1765 "lossless.w"
 
 void frame_consume(void);
 void frame_enter(cell,cell,cell);
@@ -626,12 +686,12 @@ void frame_leave(void);
 void frame_push(int);
 
 /*:104*//*109:*/
-#line 1839 "lossless.w"
+#line 1840 "lossless.w"
 
 void interpret(void);
 
 /*:109*//*115:*/
-#line 1940 "lossless.w"
+#line 1941 "lossless.w"
 
 int read_byte(void);
 cell read_cstring(char*);
@@ -639,12 +699,13 @@ cell read_form(void);
 cell read_list(cell);
 cell read_number(void);
 cell read_sexp(void);
+cell read_special(void);
 cell read_symbol(void);
 void unread_byte(char);
 int useful_byte(void);
 
-/*:115*//*135:*/
-#line 2430 "lossless.w"
+/*:115*//*137:*/
+#line 2459 "lossless.w"
 
 ssize_t write_applicative(cell,char*,ssize_t,int);
 ssize_t write_bytecode(cell,char*,ssize_t,int);
@@ -658,8 +719,8 @@ ssize_t write_syntax(cell,char*,ssize_t,int);
 ssize_t write_vector(cell,char*,ssize_t,int);
 ssize_t write_form(cell,char*,ssize_t,int);
 
-/*:135*//*167:*/
-#line 3158 "lossless.w"
+/*:137*//*169:*/
+#line 3187 "lossless.w"
 
 cell arity(cell,cell,int,boolean);
 cell arity_next(cell,cell,cell,boolean,boolean);
@@ -690,26 +751,27 @@ void compile_symbol_p(cell,cell,boolean);
 void compile_vov(cell,cell,boolean);
 void emit(cell);
 
-/*:167*//*206:*/
-#line 4089 "lossless.w"
+/*:169*//*208:*/
+#line 4124 "lossless.w"
 
 void compile_quasicompiler(cell,cell,cell,int,boolean);
 
-/*:206*//*228:*/
-#line 4377 "lossless.w"
+/*:208*//*230:*/
+#line 4417 "lossless.w"
 
 llt_buffer*llt_alloc_imp(size_t,size_t);
+llt_buffer*llt_cat(const char*,...);
 llt_buffer*llt_grow_imp(llt_buffer*,size_t);
 
-/*:228*//*232:*/
-#line 4420 "lossless.w"
+/*:230*//*235:*/
+#line 4481 "lossless.w"
 
 llt_buffer*llt_serialise(cell,boolean);
 boolean llt_compare_serial(llt_buffer*,cell,boolean);
 llt_buffer*llt_copy_refs(cell);
 
-/*:232*//*236:*/
-#line 4538 "lossless.w"
+/*:235*//*239:*/
+#line 4598 "lossless.w"
 
 #ifdef LL_TEST
 void tap_plan(int);
@@ -719,15 +781,15 @@ char*test_msgf(char*,char*,char*,...);
 void test_vm_state(char*,int);
 #endif
 
-/*:236*//*243:*/
-#line 4628 "lossless.w"
+/*:239*//*246:*/
+#line 4689 "lossless.w"
 
 void compile_testing_probe(cell,cell,boolean);
 void compile_testing_probe_app(cell,cell,boolean);
 cell testing_build_probe(cell);
 
-/*:243*//*471:*/
-#line 8501 "lossless.w"
+/*:246*//*489:*/
+#line 8920 "lossless.w"
 
 #define TEST_EVAL_FOUND(var) \
 if (undefined_p(var))        \
@@ -752,25 +814,25 @@ while (!null_p(t)) {                                          \
 }
 void test_integrate_eval_unchanged(char*,cell,cell);
 
-/*:471*//*501:*/
-#line 9433 "lossless.w"
+/*:489*//*519:*/
+#line 9852 "lossless.w"
 
 cell assoc_member(cell,cell);
 cell assoc_content(cell,cell);
 cell assoc_value(cell,cell);
 
-/*:501*/
-#line 72 "lossless.w"
+/*:519*/
+#line 74 "lossless.w"
 
 /*6:*/
-#line 138 "lossless.w"
+#line 140 "lossless.w"
 
 volatile boolean Error_Handler= bfalse;
 jmp_buf Goto_Begin;
 jmp_buf Goto_Error;
 
 /*:6*//*12:*/
-#line 252 "lossless.w"
+#line 254 "lossless.w"
 
 cell*CAR= NULL;
 cell*CDR= NULL;
@@ -781,13 +843,13 @@ int Cells_Poolsize= 0;
 int Cells_Segment= HEAP_SEGMENT;
 
 /*:12*//*19:*/
-#line 407 "lossless.w"
+#line 409 "lossless.w"
 
 cell Tmp_CAR= NIL;
 cell Tmp_CDR= NIL;
 
 /*:19*//*25:*/
-#line 457 "lossless.w"
+#line 459 "lossless.w"
 
 cell*VECTOR= NULL;
 int Vectors_Free= 0;
@@ -795,12 +857,12 @@ int Vectors_Poolsize= 0;
 int Vectors_Segment= HEAP_SEGMENT;
 
 /*:25*//*30:*/
-#line 513 "lossless.w"
+#line 515 "lossless.w"
 
 cell Zero_Vector= NIL;
 
 /*:30*//*47:*/
-#line 836 "lossless.w"
+#line 838 "lossless.w"
 
 cell CTS= NIL;
 cell RTS= NIL;
@@ -809,7 +871,7 @@ int RTS_Size= 0;
 int RTSp= -1;
 
 /*:47*//*56:*/
-#line 1040 "lossless.w"
+#line 1042 "lossless.w"
 
 cell Symbol_Table= NIL;
 char*SYMBOL= NULL;
@@ -817,24 +879,24 @@ int Symbol_Free= 0;
 int Symbol_Poolsize= 0;
 
 /*:56*//*66:*/
-#line 1166 "lossless.w"
+#line 1168 "lossless.w"
 
 cell Small_Int[UCHAR_MAX+1];
 
 /*:66*//*78:*/
-#line 1358 "lossless.w"
+#line 1360 "lossless.w"
 
 cell Sym_ERR_BOUND= NIL;
 cell Sym_ERR_UNBOUND= NIL;
 
 /*:78*//*91:*/
-#line 1577 "lossless.w"
+#line 1578 "lossless.w"
 
 
 
 primitive COMPILER[]= {
-/*499:*/
-#line 9373 "lossless.w"
+/*517:*/
+#line 9792 "lossless.w"
 
 
 {"error",compile_error},
@@ -858,29 +920,29 @@ primitive COMPILER[]= {
 {"set!",compile_set_m},
 {"define!",compile_define_m},
 #ifdef LL_TEST
-/*247:*/
-#line 4645 "lossless.w"
+/*250:*/
+#line 4706 "lossless.w"
 
 {"test!probe",compile_testing_probe},
 {"test!probe-applying",compile_testing_probe_app},
 
-/*:247*/
-#line 9396 "lossless.w"
+/*:250*/
+#line 9815 "lossless.w"
 
 #endif
 
-/*:499*//*505:*/
-#line 9480 "lossless.w"
+/*:517*//*523:*/
+#line 9899 "lossless.w"
 
 {"symbol?",compile_symbol_p},
 
-/*:505*/
-#line 1581 "lossless.w"
+/*:523*/
+#line 1582 "lossless.w"
 
 {NULL,NULL}};
 
 /*:91*//*93:*/
-#line 1625 "lossless.w"
+#line 1626 "lossless.w"
 
 boolean Interrupt= 0;
 boolean Running= 0;
@@ -892,12 +954,12 @@ cell Root= NIL;
 int Ip= 0;
 
 /*:93*//*101:*/
-#line 1751 "lossless.w"
+#line 1752 "lossless.w"
 
 int Fp= -1;
 
 /*:101*//*112:*/
-#line 1915 "lossless.w"
+#line 1916 "lossless.w"
 
 char Putback[2]= {'\0','\0'};
 int Read_Level= 0;
@@ -909,8 +971,8 @@ cell Sym_SYNTAX_QUOTE= NIL;
 cell Sym_SYNTAX_UNQUOTE= NIL;
 cell Sym_SYNTAX_UNSPLICE= NIL;
 
-/*:112*//*148:*/
-#line 2816 "lossless.w"
+/*:112*//*150:*/
+#line 2845 "lossless.w"
 
 opcode OP[OPCODE_MAX]= {
 [OP_APPLY]= {.name= "OP_APPLY",.nargs= 1},
@@ -954,32 +1016,32 @@ opcode OP[OPCODE_MAX]= {
 [OP_SYNTAX]= {.name= "OP_SYNTAX",.nargs= 1},
 [OP_VOV]= {.name= "OP_VOV",.nargs= 1},
 #ifdef LL_TEST
-/*245:*/
-#line 4636 "lossless.w"
+/*248:*/
+#line 4697 "lossless.w"
 
 [OP_TEST_PROBE]= {.name= "OP_VOV",.nargs= 1},
 
-/*:245*/
-#line 2859 "lossless.w"
+/*:248*/
+#line 2888 "lossless.w"
 
 #endif
 };
 
-/*:148*//*165:*/
-#line 3150 "lossless.w"
+/*:150*//*167:*/
+#line 3179 "lossless.w"
 
 int Here= 0;
 cell Compilation= NIL;
 
-/*:165*//*180:*/
-#line 3361 "lossless.w"
+/*:167*//*182:*/
+#line 3390 "lossless.w"
 
 cell Sym_ERR_ARITY_EXTRA= NIL;
 cell Sym_ERR_ARITY_MISSING= NIL;
 cell Sym_ERR_ARITY_SYNTAX= NIL;
 
-/*:180*//*194:*/
-#line 3656 "lossless.w"
+/*:182*//*196:*/
+#line 3691 "lossless.w"
 
 cell Sym_vov_args= UNDEFINED;
 cell Sym_vov_args_long= UNDEFINED;
@@ -988,31 +1050,31 @@ cell Sym_vov_cont_long= UNDEFINED;
 cell Sym_vov_env= UNDEFINED;
 cell Sym_vov_env_long= UNDEFINED;
 
-/*:194*//*220:*/
-#line 4311 "lossless.w"
+/*:196*//*222:*/
+#line 4346 "lossless.w"
 
 #ifdef LL_TEST
 int Allocate_Success= -1;
 #endif
 
-/*:220*//*223:*/
-#line 4339 "lossless.w"
+/*:222*//*225:*/
+#line 4374 "lossless.w"
 
 cell Tmp_Test= NIL;
 
-/*:223*//*237:*/
-#line 4547 "lossless.w"
+/*:225*//*240:*/
+#line 4607 "lossless.w"
 
 boolean Test_Passing= btrue;
 int Test_Plan= -1;
 int Next_Test= 1;
 
-/*:237*/
-#line 73 "lossless.w"
+/*:240*/
+#line 75 "lossless.w"
 
 
 /*:2*//*9:*/
-#line 161 "lossless.w"
+#line 163 "lossless.w"
 
 void
 error_imp(char*message,
@@ -1045,7 +1107,7 @@ longjmp(Goto_Begin,1);
 }
 
 /*:9*//*11:*/
-#line 205 "lossless.w"
+#line 207 "lossless.w"
 
 void
 warn(char*message,
@@ -1057,7 +1119,7 @@ printf("WARNING: %s: %s\n",message,wbuf);
 }
 
 /*:11*//*16:*/
-#line 294 "lossless.w"
+#line 296 "lossless.w"
 
 void
 new_cells_segment(void)
@@ -1075,15 +1137,15 @@ Cells_Segment= Cells_Poolsize/2;
 }
 
 /*:16*//*17:*/
-#line 368 "lossless.w"
+#line 370 "lossless.w"
 
 
 /*:17*//*18:*/
-#line 399 "lossless.w"
+#line 401 "lossless.w"
 
 
 /*:18*//*24:*/
-#line 424 "lossless.w"
+#line 426 "lossless.w"
 
 cell
 atom(cell ncar,
@@ -1111,7 +1173,7 @@ return r;
 }
 
 /*:24*//*29:*/
-#line 476 "lossless.w"
+#line 478 "lossless.w"
 
 void
 new_vector_segment(void)
@@ -1127,7 +1189,7 @@ Vectors_Segment= Vectors_Poolsize/2;
 }
 
 /*:29*//*37:*/
-#line 538 "lossless.w"
+#line 540 "lossless.w"
 
 cell
 vector_new_imp(int size,
@@ -1157,7 +1219,7 @@ return r;
 }
 
 /*:37*//*38:*/
-#line 566 "lossless.w"
+#line 568 "lossless.w"
 
 cell
 vector_new(int size,
@@ -1169,7 +1231,7 @@ return vector_new_imp(size,btrue,fill);
 }
 
 /*:38*//*39:*/
-#line 578 "lossless.w"
+#line 580 "lossless.w"
 
 cell
 vector_new_list(cell list,
@@ -1186,7 +1248,7 @@ return r;
 }
 
 /*:39*//*40:*/
-#line 597 "lossless.w"
+#line 599 "lossless.w"
 
 cell
 vector_sub(cell src,
@@ -1212,51 +1274,51 @@ return dst;
 }
 
 /*:40*//*41:*/
-#line 633 "lossless.w"
+#line 635 "lossless.w"
 
 cell*ROOTS[]= {/*21:*/
-#line 414 "lossless.w"
+#line 416 "lossless.w"
 
 &Tmp_CAR,&Tmp_CDR,
 
 /*:21*//*32:*/
-#line 519 "lossless.w"
+#line 521 "lossless.w"
 
 &Zero_Vector,
 
 /*:32*//*49:*/
-#line 847 "lossless.w"
+#line 849 "lossless.w"
 
 &CTS,&RTS,&VMS,
 
 /*:49*//*58:*/
-#line 1051 "lossless.w"
+#line 1053 "lossless.w"
 
 &Symbol_Table,
 
 /*:58*//*95:*/
-#line 1640 "lossless.w"
+#line 1641 "lossless.w"
 
 &Acc,&Env,&Prog,&Prog_Main,&Root,
 
-/*:95*//*168:*/
-#line 3188 "lossless.w"
+/*:95*//*170:*/
+#line 3217 "lossless.w"
 
 &Compilation,
 
-/*:168*//*225:*/
-#line 4345 "lossless.w"
+/*:170*//*227:*/
+#line 4380 "lossless.w"
 
 #ifdef LL_TEST
 &Tmp_Test,
 #endif
 
-/*:225*/
-#line 634 "lossless.w"
+/*:227*/
+#line 636 "lossless.w"
 NULL};
 
 /*:41*//*44:*/
-#line 645 "lossless.w"
+#line 647 "lossless.w"
 
 void
 mark(cell next)
@@ -1367,14 +1429,14 @@ return sweep();
 }
 
 /*:44*//*45:*/
-#line 759 "lossless.w"
+#line 761 "lossless.w"
 
 int
 gc_vectors(void)
 {
 int to,from,d,i,r;
 /*46:*/
-#line 789 "lossless.w"
+#line 791 "lossless.w"
 
 i= 0;
 while(i<Vectors_Free){
@@ -1383,7 +1445,7 @@ i+= vector_realsize(VECTOR[i+VECTOR_SIZE]);
 }
 
 /*:46*/
-#line 764 "lossless.w"
+#line 766 "lossless.w"
 
 gc();
 from= to= 0;
@@ -1406,7 +1468,7 @@ return r;
 }
 
 /*:45*//*52:*/
-#line 875 "lossless.w"
+#line 877 "lossless.w"
 
 cell
 vms_pop(void)
@@ -1439,7 +1501,7 @@ car(VMS)= item;
 }
 
 /*:52*//*53:*/
-#line 912 "lossless.w"
+#line 914 "lossless.w"
 
 cell
 cts_pop()
@@ -1472,7 +1534,7 @@ car(CTS)= item;
 }
 
 /*:53*//*54:*/
-#line 948 "lossless.w"
+#line 950 "lossless.w"
 
 void
 rts_prepare(int need)
@@ -1487,7 +1549,7 @@ RTS_Size= s;
 }
 
 /*:54*//*55:*/
-#line 966 "lossless.w"
+#line 968 "lossless.w"
 
 cell
 rts_pop(int count)
@@ -1540,7 +1602,7 @@ vector_ref(RTS,d)= v;
 }
 
 /*:55*//*61:*/
-#line 1067 "lossless.w"
+#line 1069 "lossless.w"
 
 void
 symbol_expand(void)
@@ -1553,7 +1615,7 @@ SYMBOL= new;
 }
 
 /*:61*//*62:*/
-#line 1084 "lossless.w"
+#line 1086 "lossless.w"
 
 cell
 symbol_steal(char*cstr)
@@ -1570,7 +1632,7 @@ return r;
 }
 
 /*:62*//*63:*/
-#line 1102 "lossless.w"
+#line 1104 "lossless.w"
 
 boolean
 symbol_same_p(cell maybe,
@@ -1593,7 +1655,7 @@ return btrue;
 }
 
 /*:63*//*64:*/
-#line 1123 "lossless.w"
+#line 1125 "lossless.w"
 
 void
 symbol_reify(cell s)
@@ -1603,7 +1665,7 @@ Symbol_Table= cons(s,Symbol_Table);
 }
 
 /*:64*//*65:*/
-#line 1131 "lossless.w"
+#line 1133 "lossless.w"
 
 cell
 symbol(char*cstr,
@@ -1623,7 +1685,7 @@ return s;
 }
 
 /*:65*//*71:*/
-#line 1193 "lossless.w"
+#line 1195 "lossless.w"
 
 cell
 int_new_imp(int value,
@@ -1635,7 +1697,7 @@ return atom((cell)value,next,FORMAT_INTEGER);
 }
 
 /*:71*//*72:*/
-#line 1203 "lossless.w"
+#line 1205 "lossless.w"
 
 cell
 int_new(int value)
@@ -1646,7 +1708,7 @@ return int_new_imp(value,NIL);
 }
 
 /*:72*//*74:*/
-#line 1227 "lossless.w"
+#line 1229 "lossless.w"
 
 int
 list_length(cell l)
@@ -1662,7 +1724,7 @@ return c;
 }
 
 /*:74*//*75:*/
-#line 1245 "lossless.w"
+#line 1247 "lossless.w"
 
 predicate
 list_p(cell o,
@@ -1689,7 +1751,7 @@ return improper_p;
 }
 
 /*:75*//*76:*/
-#line 1273 "lossless.w"
+#line 1275 "lossless.w"
 
 cell
 list_reverse(cell l,
@@ -1722,7 +1784,7 @@ return vms_pop();
 }
 
 /*:76*//*77:*/
-#line 1309 "lossless.w"
+#line 1311 "lossless.w"
 
 cell
 list_reverse_m(cell l,
@@ -1746,7 +1808,7 @@ return m;
 }
 
 /*:77*//*82:*/
-#line 1386 "lossless.w"
+#line 1388 "lossless.w"
 
 cell
 env_search(cell haystack,
@@ -1761,7 +1823,7 @@ return UNDEFINED;
 }
 
 /*:82*//*83:*/
-#line 1399 "lossless.w"
+#line 1401 "lossless.w"
 
 cell
 env_here(cell haystack,
@@ -1775,7 +1837,7 @@ return UNDEFINED;
 }
 
 /*:83*//*84:*/
-#line 1420 "lossless.w"
+#line 1422 "lossless.w"
 
 void
 env_set(cell e,
@@ -1787,7 +1849,7 @@ cell ass,t;
 ass= cons(name,cons(value,NIL));
 vms_push(ass);
 if(new_p){/*86:*/
-#line 1462 "lossless.w"
+#line 1464 "lossless.w"
 
 if(!undefined_p(env_here(e,name)))
 env_set_fail(ERR_BOUND);
@@ -1796,10 +1858,10 @@ vms_clear();
 return;
 
 /*:86*/
-#line 1430 "lossless.w"
+#line 1432 "lossless.w"
 }
 else{/*85:*/
-#line 1440 "lossless.w"
+#line 1442 "lossless.w"
 
 if(null_p(env_layer(e)))
 env_set_fail(ERR_UNBOUND);
@@ -1819,12 +1881,12 @@ return;
 env_set_fail(ERR_UNBOUND);
 
 /*:85*/
-#line 1431 "lossless.w"
+#line 1433 "lossless.w"
 }
 }
 
 /*:84*//*87:*/
-#line 1472 "lossless.w"
+#line 1474 "lossless.w"
 
 cell
 env_lift_stack(cell e,
@@ -1840,10 +1902,9 @@ formals= cdr(formals);
 name= formals;
 formals= NIL;
 }
-if(null_p(name))
-rts_clear(1);
-else{
-ass= cons(rts_pop(1),NIL);
+ass= rts_pop(1);
+if(symbol_p(name)){
+ass= cons(ass,NIL);
 ass= cons(name,ass);
 p= cons(ass,p);
 vms_set(p);
@@ -1856,7 +1917,7 @@ return r;
 }
 
 /*:87*//*89:*/
-#line 1542 "lossless.w"
+#line 1543 "lossless.w"
 
 cell
 closure_new_imp(char ntag,
@@ -1873,7 +1934,7 @@ return atom(formals,r,ntag);
 }
 
 /*:89*//*98:*/
-#line 1691 "lossless.w"
+#line 1692 "lossless.w"
 
 void
 vm_init_imp(void)
@@ -1882,7 +1943,7 @@ cell t;
 int i;
 primitive*n;
 /*15:*/
-#line 269 "lossless.w"
+#line 271 "lossless.w"
 
 free(CAR);
 free(CDR);
@@ -1894,12 +1955,12 @@ Cells_Poolsize= 0;
 Cells_Segment= HEAP_SEGMENT;
 
 /*:15*//*23:*/
-#line 420 "lossless.w"
+#line 422 "lossless.w"
 
 Tmp_CAR= Tmp_CDR= NIL;
 
 /*:23*//*28:*/
-#line 470 "lossless.w"
+#line 472 "lossless.w"
 
 free(VECTOR);
 VECTOR= NULL;
@@ -1907,19 +1968,19 @@ Vectors_Free= Vectors_Poolsize= 0;
 Vectors_Segment= HEAP_SEGMENT;
 
 /*:28*//*34:*/
-#line 525 "lossless.w"
+#line 527 "lossless.w"
 
 Zero_Vector= NIL;
 
 /*:34*//*50:*/
-#line 850 "lossless.w"
+#line 852 "lossless.w"
 
 CTS= RTS= VMS= NIL;
 RTS_Size= 0;
 RTSp= -1;
 
 /*:50*//*60:*/
-#line 1061 "lossless.w"
+#line 1063 "lossless.w"
 
 free(SYMBOL);
 SYMBOL= NULL;
@@ -1927,61 +1988,61 @@ Symbol_Poolsize= Symbol_Free= 0;
 Symbol_Table= NIL;
 
 /*:60*//*68:*/
-#line 1178 "lossless.w"
+#line 1180 "lossless.w"
 
 for(i= 0;i<256;i++)
 Small_Int[i]= NIL;
 
 /*:68*//*96:*/
-#line 1643 "lossless.w"
+#line 1644 "lossless.w"
 
 Acc= Env= Prog= Prog_Main= Root= NIL;
 Interrupt= Running= Ip= 0;
 
-/*:96*//*169:*/
-#line 3191 "lossless.w"
+/*:96*//*171:*/
+#line 3220 "lossless.w"
 
 Compilation= NIL;
 
-/*:169*//*226:*/
-#line 4350 "lossless.w"
+/*:171*//*228:*/
+#line 4385 "lossless.w"
 
 #ifdef LL_TEST
 Tmp_Test= NIL;
 #endif
 
-/*:226*/
-#line 1698 "lossless.w"
+/*:228*/
+#line 1699 "lossless.w"
 
 /*3:*/
-#line 75 "lossless.w"
+#line 77 "lossless.w"
 
 
 
 /*:3*//*33:*/
-#line 522 "lossless.w"
+#line 524 "lossless.w"
 
 Zero_Vector= vector_new_imp(0,0,0);
 
 /*:33*//*69:*/
-#line 1182 "lossless.w"
+#line 1184 "lossless.w"
 
 for(i= SCHAR_MIN;i<=SCHAR_MAX;i++)
 Small_Int[(unsigned char)i]= int_new_imp(i,NIL);
 
 /*:69*//*80:*/
-#line 1365 "lossless.w"
+#line 1367 "lossless.w"
 
 Sym_ERR_BOUND= sym(ERR_BOUND);
 Sym_ERR_UNBOUND= sym(ERR_UNBOUND);
 
 /*:80*//*103:*/
-#line 1757 "lossless.w"
+#line 1758 "lossless.w"
 
 Fp= -1;
 
 /*:103*//*114:*/
-#line 1932 "lossless.w"
+#line 1933 "lossless.w"
 
 Sym_ERR_UNEXPECTED= sym(ERR_UNEXPECTED);
 Sym_SYNTAX_DOTTED= sym(SYNTAX_DOTTED);
@@ -1990,15 +2051,15 @@ Sym_SYNTAX_QUOTE= sym(SYNTAX_QUOTE);
 Sym_SYNTAX_UNQUOTE= sym(SYNTAX_UNQUOTE);
 Sym_SYNTAX_UNSPLICE= sym(SYNTAX_UNSPLICE);
 
-/*:114*//*182:*/
-#line 3369 "lossless.w"
+/*:114*//*184:*/
+#line 3398 "lossless.w"
 
 Sym_ERR_ARITY_EXTRA= sym(ERR_ARITY_EXTRA);
 Sym_ERR_ARITY_MISSING= sym(ERR_ARITY_MISSING);
 Sym_ERR_ARITY_SYNTAX= sym(ERR_ARITY_SYNTAX);
 
-/*:182*//*195:*/
-#line 3664 "lossless.w"
+/*:184*//*197:*/
+#line 3699 "lossless.w"
 
 Sym_vov_args= sym("vov/args");
 Sym_vov_args_long= sym("vov/arguments");
@@ -2007,8 +2068,8 @@ Sym_vov_cont_long= sym("vov/continuation");
 Sym_vov_env= sym("vov/env");
 Sym_vov_env_long= sym("vov/environment");
 
-/*:195*/
-#line 1699 "lossless.w"
+/*:197*/
+#line 1700 "lossless.w"
 
 Prog_Main= compile_main();
 i= 0;
@@ -2023,7 +2084,7 @@ Env= Root;
 }
 
 /*:98*//*99:*/
-#line 1712 "lossless.w"
+#line 1713 "lossless.w"
 
 void
 vm_prepare_imp(void)
@@ -2034,7 +2095,7 @@ rts_reset();
 }
 
 /*:99*//*100:*/
-#line 1721 "lossless.w"
+#line 1722 "lossless.w"
 
 void
 vm_reset(void)
@@ -2044,7 +2105,7 @@ Running= Interrupt= Ip= 0;
 }
 
 /*:100*//*105:*/
-#line 1770 "lossless.w"
+#line 1771 "lossless.w"
 
 void
 frame_push(int ipdelta)
@@ -2056,7 +2117,7 @@ rts_push(int_new(Fp));
 }
 
 /*:105*//*106:*/
-#line 1780 "lossless.w"
+#line 1781 "lossless.w"
 
 void
 frame_enter(cell e,
@@ -2070,7 +2131,7 @@ Fp= RTSp-FRAME_HEAD;
 }
 
 /*:106*//*107:*/
-#line 1798 "lossless.w"
+#line 1799 "lossless.w"
 
 void
 frame_leave(void)
@@ -2085,7 +2146,7 @@ Fp= prev;
 }
 
 /*:107*//*108:*/
-#line 1816 "lossless.w"
+#line 1817 "lossless.w"
 
 void
 frame_consume(void)
@@ -2105,7 +2166,7 @@ Fp-= src-dst;
 }
 
 /*:108*//*110:*/
-#line 1844 "lossless.w"
+#line 1845 "lossless.w"
 
 void
 interpret(void)
@@ -2118,14 +2179,14 @@ while(Running&&!Interrupt){
 ins= int_value(vector_ref(Prog,Ip));
 switch(ins){
 /*10:*/
-#line 197 "lossless.w"
+#line 199 "lossless.w"
 
 case OP_ERROR:
 error_imp(NULL,Acc,rts_pop(1));
 break;
 
-/*:10*//*150:*/
-#line 2866 "lossless.w"
+/*:10*//*152:*/
+#line 2895 "lossless.w"
 
 case OP_HALT:
 Running= 0;
@@ -2153,16 +2214,16 @@ case OP_NOOP:
 skip(1);
 break;
 
-/*:150*//*151:*/
-#line 2896 "lossless.w"
+/*:152*//*153:*/
+#line 2925 "lossless.w"
 
 case OP_QUOTE:
 Acc= fetch(1);
 skip(2);
 break;
 
-/*:151*//*152:*/
-#line 2905 "lossless.w"
+/*:153*//*154:*/
+#line 2934 "lossless.w"
 
 case OP_CAR:
 Acc= car(Acc);
@@ -2181,8 +2242,8 @@ Acc= pair_p(Acc)?TRUE:FALSE;
 skip(1);
 break;
 
-/*:152*//*153:*/
-#line 2926 "lossless.w"
+/*:154*//*155:*/
+#line 2955 "lossless.w"
 
 case OP_CONS:
 Acc= cons(Acc,rts_pop(1));
@@ -2194,8 +2255,8 @@ Acc= car(Acc);
 skip(1);
 break;
 
-/*:153*//*154:*/
-#line 2938 "lossless.w"
+/*:155*//*156:*/
+#line 2967 "lossless.w"
 
 case OP_SET_CAR_M:
 car(rts_pop(1))= Acc;
@@ -2208,8 +2269,8 @@ Acc= VOID;
 skip(1);
 break;
 
-/*:154*//*155:*/
-#line 2952 "lossless.w"
+/*:156*//*157:*/
+#line 2981 "lossless.w"
 
 case OP_LIST_P:
 if(!false_p(fetch(2)))
@@ -2232,8 +2293,8 @@ Acc= atom(fetch(1),Acc,FORMAT_SYNTAX);
 skip(2);
 break;
 
-/*:155*//*156:*/
-#line 2986 "lossless.w"
+/*:157*//*158:*/
+#line 3015 "lossless.w"
 
 case OP_CYCLE:
 tmp= rts_ref(0);
@@ -2264,8 +2325,8 @@ rts_push(NIL);
 skip(1);
 break;
 
-/*:156*//*157:*/
-#line 3019 "lossless.w"
+/*:158*//*159:*/
+#line 3048 "lossless.w"
 
 case OP_ENVIRONMENT_P:
 Acc= environment_p(Acc)?TRUE:FALSE;
@@ -2289,8 +2350,8 @@ Root= Acc;
 skip(1);
 break;
 
-/*:157*//*158:*/
-#line 3046 "lossless.w"
+/*:159*//*160:*/
+#line 3075 "lossless.w"
 
 case OP_LOOKUP:
 vms_push(Acc);
@@ -2303,8 +2364,8 @@ vms_pop();
 skip(1);
 break;
 
-/*:158*//*159:*/
-#line 3069 "lossless.w"
+/*:160*//*161:*/
+#line 3098 "lossless.w"
 
 case OP_APPLY:
 case OP_APPLY_TAIL:
@@ -2319,8 +2380,8 @@ case OP_RETURN:
 frame_leave();
 break;
 
-/*:159*//*160:*/
-#line 3087 "lossless.w"
+/*:161*//*162:*/
+#line 3116 "lossless.w"
 
 case OP_LAMBDA:
 Acc= applicative_new(rts_pop(1),Env,Prog,int_value(fetch(1)));
@@ -2331,24 +2392,24 @@ Acc= operative_new(rts_pop(1),Env,Prog,int_value(fetch(1)));
 skip(2);
 break;
 
-/*:160*//*162:*/
-#line 3101 "lossless.w"
+/*:162*//*164:*/
+#line 3130 "lossless.w"
 
 case OP_COMPILE:
 Acc= compile(Acc);
 skip(1);
 break;
 
-/*:162*//*163:*/
-#line 3112 "lossless.w"
+/*:164*//*165:*/
+#line 3141 "lossless.w"
 
 case OP_RUN:
 frame_push(1);
 frame_enter(Env,Acc,0);
 break;
 
-/*:163*//*164:*/
-#line 3122 "lossless.w"
+/*:165*//*166:*/
+#line 3151 "lossless.w"
 
 case OP_RUN_THERE:
 vms_push(rts_pop(1));
@@ -2356,28 +2417,28 @@ frame_push(1);
 frame_enter(vms_pop(),Acc,0);
 break;
 
-/*:164*//*507:*/
-#line 9494 "lossless.w"
+/*:166*//*525:*/
+#line 9913 "lossless.w"
 
 case OP_SYMBOL_P:
 Acc= symbol_p(Acc)?TRUE:FALSE;
 skip(1);
 break;
 
-/*:507*/
-#line 1855 "lossless.w"
+/*:525*/
+#line 1856 "lossless.w"
 
 #ifdef LL_TEST
-/*246:*/
-#line 4639 "lossless.w"
+/*249:*/
+#line 4700 "lossless.w"
 
 case OP_TEST_PROBE:
 Acc= testing_build_probe(rts_pop(1));
 skip(1);
 break;
 
-/*:246*/
-#line 1857 "lossless.w"
+/*:249*/
+#line 1858 "lossless.w"
 
 #endif
 default:
@@ -2389,7 +2450,7 @@ error(ERR_INTERRUPTED,NIL);
 }
 
 /*:110*//*116:*/
-#line 1951 "lossless.w"
+#line 1953 "lossless.w"
 
 int
 read_byte(void)
@@ -2419,7 +2480,7 @@ Putback[0]= c;
 }
 
 /*:116*//*117:*/
-#line 1985 "lossless.w"
+#line 1987 "lossless.w"
 
 cell
 read_cstring(char*src)
@@ -2432,7 +2493,7 @@ return r;
 }
 
 /*:117*//*118:*/
-#line 1998 "lossless.w"
+#line 2000 "lossless.w"
 
 int
 useful_byte(void)
@@ -2465,7 +2526,7 @@ return EOF;
 }
 
 /*:118*//*119:*/
-#line 2032 "lossless.w"
+#line 2034 "lossless.w"
 
 cell
 read_sexp(void)
@@ -2477,7 +2538,7 @@ return read_form();
 }
 
 /*:119*//*120:*/
-#line 2046 "lossless.w"
+#line 2048 "lossless.w"
 
 cell
 read_form(void)
@@ -2490,7 +2551,7 @@ if(Read_Level> READER_MAX_DEPTH)
 error(ERR_RECURSION,NIL);
 c= useful_byte();
 switch(c){/*121:*/
-#line 2065 "lossless.w"
+#line 2067 "lossless.w"
 
 case EOF:
 if(!Read_Level)
@@ -2499,7 +2560,7 @@ else
 error(ERR_ARITY_SYNTAX,NIL);
 
 /*:121*//*123:*/
-#line 2075 "lossless.w"
+#line 2077 "lossless.w"
 
 case'(':
 return read_list(READ_CLOSE_PAREN);
@@ -2516,7 +2577,7 @@ else
 return c==')'?READ_CLOSE_PAREN:READ_CLOSE_BRACKET;
 
 /*:123*//*124:*/
-#line 2093 "lossless.w"
+#line 2095 "lossless.w"
 
 case'.':
 if(!Read_Level)
@@ -2528,15 +2589,20 @@ unread_byte(c);
 return READ_DOT;
 
 /*:124*//*125:*/
-#line 2105 "lossless.w"
+#line 2107 "lossless.w"
+
+case'#':
+return read_special();
+
+/*:125*//*126:*/
+#line 2113 "lossless.w"
 
 case'"':
-case'#':
 case'|':
 error(ERR_UNIMPLEMENTED,NIL);
 
-/*:125*//*126:*/
-#line 2125 "lossless.w"
+/*:126*//*127:*/
+#line 2132 "lossless.w"
 
 case'\'':
 case'`':
@@ -2564,8 +2630,8 @@ r= sym(SYNTAX_UNQUOTE);
 return atom(r,read_form(),FORMAT_SYNTAX);
 }
 
-/*:126*//*127:*/
-#line 2155 "lossless.w"
+/*:127*//*128:*/
+#line 2162 "lossless.w"
 
 default:
 if(!isprint(c))
@@ -2576,14 +2642,14 @@ return read_number();
 else
 return read_symbol();
 
-/*:127*/
-#line 2057 "lossless.w"
+/*:128*/
+#line 2059 "lossless.w"
 }
 error(ERR_UNEXPECTED,NIL);
 }
 
-/*:120*//*128:*/
-#line 2173 "lossless.w"
+/*:120*//*129:*/
+#line 2180 "lossless.w"
 
 cell
 read_list(cell delimiter)
@@ -2603,8 +2669,8 @@ next= read_form();
 if(special_p(next)){
 
 
-/*129:*/
-#line 2213 "lossless.w"
+/*130:*/
+#line 2220 "lossless.w"
 
 if(eof_p(next))
 error(ERR_ARITY_SYNTAX,NIL);
@@ -2613,8 +2679,8 @@ else if(next==READ_CLOSE_BRACKET
 if(next!=delimiter)
 error(ERR_ARITY_SYNTAX,NIL);
 break;
-}else if(next==READ_DOT){/*130:*/
-#line 2228 "lossless.w"
+}else if(next==READ_DOT){/*131:*/
+#line 2235 "lossless.w"
 
 if(count<1||delimiter!=READ_CLOSE_PAREN)
 
@@ -2632,12 +2698,12 @@ if(next!=delimiter)
 error(ERR_ARITY_SYNTAX,NIL);
 break;
 
-/*:130*/
-#line 2221 "lossless.w"
+/*:131*/
+#line 2228 "lossless.w"
 }
 
-/*:129*/
-#line 2192 "lossless.w"
+/*:130*/
+#line 2199 "lossless.w"
 
 }
 count++;
@@ -2652,8 +2718,8 @@ return vector_new_list(r,count);
 return count?r:NIL;
 }
 
-/*:128*//*131:*/
-#line 2254 "lossless.w"
+/*:129*//*132:*/
+#line 2261 "lossless.w"
 
 cell
 read_number(void)
@@ -2686,8 +2752,30 @@ error(ERR_UNIMPLEMENTED,NIL);
 return int_new(r);
 }
 
-/*:131*//*132:*/
-#line 2324 "lossless.w"
+/*:132*//*133:*/
+#line 2295 "lossless.w"
+
+cell
+read_special(void)
+{
+cell r= NIL;
+int c;
+c= read_byte();
+if(c=='f')
+r= FALSE;
+else if(c=='t')
+r= TRUE;
+else
+error(ERR_UNIMPLEMENTED,NIL);
+c= read_byte();
+if(!terminable_p(c))
+error(ERR_ARITY_SYNTAX,NIL);
+unread_byte(c);
+return r;
+}
+
+/*:133*//*134:*/
+#line 2353 "lossless.w"
 
 cell
 read_symbol(void)
@@ -2699,8 +2787,8 @@ c= read_byte();
 READSYM_EOF_P;
 ERR_OOM_P(buf= malloc(CHUNK_SIZE));
 s= CHUNK_SIZE;
-/*133:*/
-#line 2354 "lossless.w"
+/*135:*/
+#line 2383 "lossless.w"
 
 buf[0]= c;
 i= 1;
@@ -2721,11 +2809,11 @@ else if(!isprint(c))
 error(ERR_ARITY_SYNTAX,NIL);
 }
 
-/*:133*/
-#line 2335 "lossless.w"
+/*:135*/
+#line 2364 "lossless.w"
 
-while(1){/*134:*/
-#line 2379 "lossless.w"
+while(1){/*136:*/
+#line 2408 "lossless.w"
 
 c= read_byte();
 READSYM_EOF_P;
@@ -2747,8 +2835,8 @@ error(ERR_OOM,NIL);
 buf= nbuf;
 }
 
-/*:134*/
-#line 2336 "lossless.w"
+/*:136*/
+#line 2365 "lossless.w"
 }
 buf[i]= '\0';
 r= sym(buf);
@@ -2756,14 +2844,14 @@ free(buf);
 return r;
 }
 
-/*:132*//*136:*/
-#line 2446 "lossless.w"
+/*:134*//*138:*/
+#line 2475 "lossless.w"
 
 ssize_t
 write_applicative(cell sexp,
 char*buf,
 ssize_t rem,
-int depth __unused)
+int depth ll_unused)
 {
 ssize_t len= 0;
 if(!applicative_p(sexp))
@@ -2776,7 +2864,7 @@ ssize_t
 write_compiler(cell sexp,
 char*buf,
 ssize_t rem,
-int depth __unused)
+int depth ll_unused)
 {
 ssize_t len= 0;
 if(!compiler_p(sexp))
@@ -2794,7 +2882,7 @@ ssize_t
 write_operative(cell sexp,
 char*buf,
 ssize_t rem,
-int depth __unused)
+int depth ll_unused)
 {
 ssize_t len= 0;
 if(!operative_p(sexp))
@@ -2803,14 +2891,14 @@ append(buf,rem,"#<operative ...>",len);
 return len;
 }
 
-/*:136*//*137:*/
-#line 2493 "lossless.w"
+/*:138*//*139:*/
+#line 2522 "lossless.w"
 
 ssize_t
 write_integer(cell sexp,
 char*buf,
 ssize_t rem,
-int depth __unused)
+int depth ll_unused)
 {
 ssize_t len= 0;
 if(!integer_p(sexp))
@@ -2825,7 +2913,7 @@ ssize_t
 write_symbol(cell sexp,
 char*buf,
 ssize_t rem,
-int depth __unused)
+int depth ll_unused)
 {
 int i;
 if(!symbol_p(sexp))
@@ -2843,8 +2931,8 @@ buf[i]= '\0';
 return i;
 }
 
-/*:137*//*138:*/
-#line 2534 "lossless.w"
+/*:139*//*140:*/
+#line 2563 "lossless.w"
 
 ssize_t
 write_syntax(cell sexp,
@@ -2864,8 +2952,8 @@ append_write(buf,rem,cdr(sexp),depth+1,len);
 return len;
 }
 
-/*:138*//*139:*/
-#line 2556 "lossless.w"
+/*:140*//*141:*/
+#line 2585 "lossless.w"
 
 ssize_t
 write_environment(cell sexp,
@@ -2887,8 +2975,8 @@ append(buf,rem," ROOT>",len);
 return len;
 }
 
-/*:139*//*140:*/
-#line 2580 "lossless.w"
+/*:141*//*142:*/
+#line 2609 "lossless.w"
 
 ssize_t
 write_exception(cell sexp,
@@ -2907,8 +2995,8 @@ append(buf,rem,">",len);
 return len;
 }
 
-/*:140*//*141:*/
-#line 2603 "lossless.w"
+/*:142*//*143:*/
+#line 2632 "lossless.w"
 
 ssize_t
 write_list(cell sexp,
@@ -2956,8 +3044,8 @@ append(buf,rem,"]",len);
 return len;
 }
 
-/*:141*//*142:*/
-#line 2654 "lossless.w"
+/*:143*//*144:*/
+#line 2683 "lossless.w"
 
 ssize_t
 write_bytecode(cell sexp,
@@ -2990,8 +3078,8 @@ return len;
 }
 
 
-/*:142*//*143:*/
-#line 2690 "lossless.w"
+/*:144*//*145:*/
+#line 2719 "lossless.w"
 
 ssize_t
 write_form(cell sexp,
@@ -3033,8 +3121,8 @@ else append(buf,rem,"#<wtf?>",len);
 return len;
 }
 
-/*:143*//*170:*/
-#line 3194 "lossless.w"
+/*:145*//*172:*/
+#line 3223 "lossless.w"
 
 void
 emit(cell bc)
@@ -3049,8 +3137,8 @@ OP_HALT);
 vector_ref(Compilation,Here++)= bc;
 }
 
-/*:170*//*171:*/
-#line 3218 "lossless.w"
+/*:172*//*173:*/
+#line 3247 "lossless.w"
 
 int
 comefrom(void)
@@ -3059,8 +3147,8 @@ emit(NIL);
 return Here-1;
 }
 
-/*:171*//*172:*/
-#line 3230 "lossless.w"
+/*:173*//*174:*/
+#line 3259 "lossless.w"
 
 cell
 compile(cell source)
@@ -3078,8 +3166,8 @@ error(ERR_COMPILE_DIRTY,source);
 return r;
 }
 
-/*:172*//*173:*/
-#line 3251 "lossless.w"
+/*:174*//*175:*/
+#line 3280 "lossless.w"
 
 cell
 compile_main(void)
@@ -3092,16 +3180,16 @@ vector_ref(r,2)= int_new(OP_HALT);
 return r;
 }
 
-/*:173*//*174:*/
-#line 3267 "lossless.w"
+/*:175*//*176:*/
+#line 3296 "lossless.w"
 
 void
 compile_expression(cell sexp,
 int tail_p)
 {
 if(!pair_p(sexp)&&!syntax_p(sexp)){
-/*175:*/
-#line 3283 "lossless.w"
+/*177:*/
+#line 3312 "lossless.w"
 
 if(symbol_p(sexp)){
 emitq(sexp);
@@ -3110,18 +3198,18 @@ emitop(OP_LOOKUP);
 emitq(sexp);
 }
 
-/*:175*/
-#line 3273 "lossless.w"
+/*:177*/
+#line 3302 "lossless.w"
 
 }else{
-/*176:*/
-#line 3296 "lossless.w"
+/*178:*/
+#line 3325 "lossless.w"
 
 cell args,combiner;
 combiner= car(sexp);
 args= undot(cdr(sexp));
-/*177:*/
-#line 3319 "lossless.w"
+/*179:*/
+#line 3348 "lossless.w"
 
 if(syntax_p(sexp)){
 cell c;
@@ -3131,21 +3219,21 @@ error(ERR_UNBOUND,combiner);
 combiner= c;
 }
 
-/*:177*/
-#line 3300 "lossless.w"
+/*:179*/
+#line 3329 "lossless.w"
 
 if(compiler_p(combiner)){
-/*178:*/
-#line 3331 "lossless.w"
+/*180:*/
+#line 3360 "lossless.w"
 
 compiler_fn(combiner)(combiner,args,tail_p);
 
-/*:178*/
-#line 3302 "lossless.w"
+/*:180*/
+#line 3331 "lossless.w"
 
 }else if(applicative_p(combiner)){
-/*189:*/
-#line 3560 "lossless.w"
+/*191:*/
+#line 3595 "lossless.w"
 
 cell collect,direct,formals,a;
 int nargs= 0;
@@ -3153,8 +3241,8 @@ int nargs= 0;
 formals= applicative_formals(combiner);
 cts_push(direct= NIL);
 a= undot(args);
-/*190:*/
-#line 3582 "lossless.w"
+/*192:*/
+#line 3617 "lossless.w"
 
 while(pair_p(formals)){
 if(!pair_p(a)){
@@ -3170,11 +3258,11 @@ formals= cdr(formals);
 nargs++;
 }
 
-/*:190*/
-#line 3567 "lossless.w"
+/*:192*/
+#line 3602 "lossless.w"
 
-/*191:*/
-#line 3601 "lossless.w"
+/*193:*/
+#line 3636 "lossless.w"
 
 if(symbol_p(formals)){
 nargs++;
@@ -3186,15 +3274,15 @@ a= undot(cdr(a));
 }
 }
 
-/*:191*/
-#line 3568 "lossless.w"
+/*:193*/
+#line 3603 "lossless.w"
 
 if(pair_p(a))
 arity_error(ERR_ARITY_EXTRA,combiner,args);
 else if(!null_p(a))
 arity_error(ERR_ARITY_SYNTAX,combiner,args);
-/*193:*/
-#line 3629 "lossless.w"
+/*195:*/
+#line 3664 "lossless.w"
 
 if(symbol_p(formals)){
 emitop(OP_NIL);
@@ -3207,11 +3295,11 @@ collect= cdr(collect);
 cts_clear();
 }
 
-/*:193*/
-#line 3573 "lossless.w"
+/*:195*/
+#line 3608 "lossless.w"
 
-/*192:*/
-#line 3616 "lossless.w"
+/*194:*/
+#line 3651 "lossless.w"
 
 while(!null_p(direct)){
 compile_expression(car(direct),0);
@@ -3219,19 +3307,19 @@ emitop(OP_PUSH);
 direct= cdr(direct);
 }
 
-/*:192*/
-#line 3574 "lossless.w"
+/*:194*/
+#line 3609 "lossless.w"
 
 cts_clear();
 emitop(tail_p?OP_APPLY_TAIL:OP_APPLY);
 emit(combiner);
 
-/*:189*/
-#line 3304 "lossless.w"
+/*:191*/
+#line 3333 "lossless.w"
 
 }else if(operative_p(combiner)){
-/*198:*/
-#line 3742 "lossless.w"
+/*200:*/
+#line 3777 "lossless.w"
 
 cell a,c,e,f;
 f= operative_formals(combiner);
@@ -3257,12 +3345,12 @@ emitop(OP_NIL);
 emitop(tail_p?OP_APPLY_TAIL:OP_APPLY);
 emit(combiner);
 
-/*:198*/
-#line 3306 "lossless.w"
+/*:200*/
+#line 3335 "lossless.w"
 
 }else if(symbol_p(combiner)||pair_p(combiner)){
-/*179:*/
-#line 3338 "lossless.w"
+/*181:*/
+#line 3367 "lossless.w"
 
 emitq(args);
 emitop(OP_PUSH);
@@ -3272,21 +3360,21 @@ emitop(OP_CONS);
 emitop(OP_COMPILE);
 emitop(OP_RUN);
 
-/*:179*/
-#line 3308 "lossless.w"
+/*:181*/
+#line 3337 "lossless.w"
 
 }else{
 error(ERR_UNCOMBINABLE,combiner);
 }
 
-/*:176*/
-#line 3275 "lossless.w"
+/*:178*/
+#line 3304 "lossless.w"
 
 }
 }
 
-/*:174*//*183:*/
-#line 3374 "lossless.w"
+/*:176*//*185:*/
+#line 3403 "lossless.w"
 
 cell
 arity(cell op,
@@ -3317,8 +3405,8 @@ arity_error(ERR_ARITY_SYNTAX,op,args);
 return a;
 }
 
-/*:183*//*184:*/
-#line 3409 "lossless.w"
+/*:185*//*186:*/
+#line 3438 "lossless.w"
 
 cell
 arity_next(cell op,
@@ -3346,8 +3434,8 @@ cts_push(car(more));
 return cdr(more);
 }
 
-/*:184*//*185:*/
-#line 3442 "lossless.w"
+/*:186*//*187:*/
+#line 3471 "lossless.w"
 
 void
 compile_list(cell op,
@@ -3373,8 +3461,8 @@ body= next;
 }
 }
 
-/*:185*//*187:*/
-#line 3497 "lossless.w"
+/*:187*//*189:*/
+#line 3526 "lossless.w"
 
 void
 compile_lambda(cell op,
@@ -3383,31 +3471,33 @@ boolean tail_p)
 {
 cell body,in,formals,f;
 int begin_address,comefrom_end;
-body= arity(op,args,1,1);
+body= arity(op,args,1,btrue);
 body= undot(body);
 formals= cts_pop();
 formals= undot(formals);
-if(!symbol_p(formals)){/*188:*/
-#line 3529 "lossless.w"
+if(!symbol_p(formals)){/*190:*/
+#line 3562 "lossless.w"
 
 cts_push(f= cons(NIL,NIL));
 in= formals;
 while(pair_p(in)){
-if(!symbol_p(car(in))&&!null_p(car(in)))
+if(!symbol_p(car(in))&&!false_p(car(in)))
 arity_error(ERR_ARITY_SYNTAX,op,args);
+find_formal_duplicates(car(in),cdr(cts_ref()));
 cdr(f)= cons(car(in),NIL);
 f= cdr(f);
 in= undot(cdr(in));
 }
 if(!null_p(in)){
-if(!symbol_p(in)&&!null_p(in))
+if(!symbol_p(in)&&!false_p(in))
 arity_error(ERR_ARITY_SYNTAX,op,args);
+find_formal_duplicates(in,cdr(cts_ref()));
 cdr(f)= in;
 }
 formals= cdr(cts_pop());
 
-/*:188*/
-#line 3509 "lossless.w"
+/*:190*/
+#line 3538 "lossless.w"
 }
 emitq(formals);
 emitop(OP_PUSH);
@@ -3423,8 +3513,8 @@ emitop(OP_RETURN);
 patch(comefrom_end,int_new(Here));
 }
 
-/*:187*//*196:*/
-#line 3672 "lossless.w"
+/*:189*//*198:*/
+#line 3707 "lossless.w"
 
 void
 compile_vov(cell op,
@@ -3440,8 +3530,8 @@ body= arity(op,args,1,1);
 body= undot(body);
 formals= cts_pop();
 formals= undot(formals);
-/*197:*/
-#line 3710 "lossless.w"
+/*199:*/
+#line 3745 "lossless.w"
 
 cell r,s;
 if(!pair_p(formals))
@@ -3468,8 +3558,8 @@ formals= cdr(formals);
 if(!null_p(formals))
 arity_error(ERR_ARITY_SYNTAX,op,args);
 
-/*:197*/
-#line 3687 "lossless.w"
+/*:199*/
+#line 3722 "lossless.w"
 
 emitop(OP_NIL);
 emitq(c);emitop(OP_CONS);emitop(OP_PUSH);
@@ -3487,8 +3577,8 @@ emitop(OP_RETURN);
 patch(comefrom_end,int_new(Here));
 }
 
-/*:196*//*199:*/
-#line 3773 "lossless.w"
+/*:198*//*201:*/
+#line 3808 "lossless.w"
 
 void
 compile_conditional(cell op,
@@ -3516,13 +3606,13 @@ compile_expression(alternate,tail_p);
 patch(jump_true,int_new(Here));
 }
 
-/*:199*//*200:*/
-#line 3804 "lossless.w"
+/*:201*//*202:*/
+#line 3839 "lossless.w"
 
 void
 compile_eval(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell more,sexp,eenv;
 int goto_env_p;
@@ -3545,13 +3635,13 @@ emitop(OP_COMPILE);
 emitop(undefined_p(eenv)?OP_RUN:OP_RUN_THERE);
 }
 
-/*:200*//*201:*/
-#line 3834 "lossless.w"
+/*:202*//*203:*/
+#line 3869 "lossless.w"
 
 void
 compile_error(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell id,more,value;
 more= arity(op,args,1,1);
@@ -3569,13 +3659,13 @@ emitq(id);
 emitop(OP_ERROR);
 }
 
-/*:201*//*202:*/
-#line 3865 "lossless.w"
+/*:203*//*204:*/
+#line 3900 "lossless.w"
 
 void
 compile_cons(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell ncar,ncdr;
 arity(op,args,2,0);
@@ -3590,7 +3680,7 @@ emitop(OP_CONS);
 void
 compile_car(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 int comefrom_pair_p;
 arity(op,args,1,0);
@@ -3610,7 +3700,7 @@ emitop(OP_CAR);
 void
 compile_cdr(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 int comefrom_pair_p;
 arity(op,args,1,0);
@@ -3630,7 +3720,7 @@ emitop(OP_CDR);
 void
 compile_null_p(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 arity(op,args,1,0);
 compile_expression(cts_pop(),0);
@@ -3640,7 +3730,7 @@ emitop(OP_NULL_P);
 void
 compile_pair_p(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 arity(op,args,1,0);
 compile_expression(cts_pop(),0);
@@ -3650,7 +3740,7 @@ emitop(OP_PAIR_P);
 void
 compile_set_car_m(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell value,object;
 int goto_pair_p;
@@ -3672,7 +3762,7 @@ emitop(OP_SET_CAR_M);
 void
 compile_set_cdr_m(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell value,object;
 int goto_pair_p;
@@ -3691,13 +3781,13 @@ compile_expression(value,bfalse);
 emitop(OP_SET_CDR_M);
 }
 
-/*:202*//*203:*/
-#line 3988 "lossless.w"
+/*:204*//*205:*/
+#line 4023 "lossless.w"
 
 void
 compile_set_m(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell env,name,value;
 int goto_env_p;
@@ -3724,7 +3814,7 @@ emit(FALSE);
 void
 compile_define_m(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 cell env,name,value;
 int goto_env_p;
@@ -3751,7 +3841,7 @@ emit(TRUE);
 void
 compile_env_root(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 arity(op,args,0,bfalse);
 emitop(OP_ENV_ROOT);
@@ -3760,36 +3850,36 @@ emitop(OP_ENV_ROOT);
 void
 compile_env_current(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 arity(op,args,0,bfalse);
 emitop(OP_ENV_QUOTE);
 }
 
-/*:203*//*204:*/
-#line 4065 "lossless.w"
+/*:205*//*206:*/
+#line 4100 "lossless.w"
 
 void
-compile_quote(cell op __unused,
+compile_quote(cell op ll_unused,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 emitq(args);
 }
 
-/*:204*//*207:*/
-#line 4092 "lossless.w"
+/*:206*//*209:*/
+#line 4127 "lossless.w"
 
 void
 compile_quasiquote(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 compile_quasicompiler(op,args,args,0,bfalse);
 }
 
-/*:207*//*208:*/
-#line 4109 "lossless.w"
+/*:209*//*210:*/
+#line 4144 "lossless.w"
 
 void
 compile_quasicompiler(cell op,
@@ -3799,8 +3889,8 @@ int depth,
 boolean in_list_p)
 {
 if(pair_p(arg)){
-/*209:*/
-#line 4142 "lossless.w"
+/*211:*/
+#line 4177 "lossless.w"
 
 cell todo,tail;
 tail= NIL;
@@ -3813,14 +3903,14 @@ compile_quasicompiler(op,oargs,car(todo),depth,btrue);
 if(in_list_p)
 emitop(OP_CONS);
 
-/*:209*/
-#line 4118 "lossless.w"
+/*:211*/
+#line 4153 "lossless.w"
 
 }else if(vector_p(arg)){
 error(ERR_UNIMPLEMENTED,NIL);
 }else if(syntax_p(arg)){
-/*210:*/
-#line 4162 "lossless.w"
+/*212:*/
+#line 4197 "lossless.w"
 
 int d;
 if(car(arg)==Sym_SYNTAX_DOTTED
@@ -3834,8 +3924,8 @@ if(in_list_p)
 emitop(OP_CONS);
 }
 
-/*:210*//*211:*/
-#line 4180 "lossless.w"
+/*:212*//*213:*/
+#line 4215 "lossless.w"
 
 else if(car(arg)==Sym_SYNTAX_UNQUOTE){
 if(depth> 0){
@@ -3848,8 +3938,8 @@ if(in_list_p)
 emitop(OP_CONS);
 }
 
-/*:211*//*212:*/
-#line 4195 "lossless.w"
+/*:213*//*214:*/
+#line 4230 "lossless.w"
 
 else if(car(arg)==Sym_SYNTAX_UNSPLICE){
 if(depth> 0){
@@ -3858,8 +3948,8 @@ emitop(OP_SYNTAX);
 emit(Sym_SYNTAX_UNSPLICE);
 if(in_list_p)
 emitop(OP_CONS);
-}else{/*213:*/
-#line 4217 "lossless.w"
+}else{/*215:*/
+#line 4252 "lossless.w"
 
 int goto_inject_iterate,goto_inject_start,goto_finish;
 int goto_list_p,goto_null_p,goto_nnull_p;
@@ -3876,8 +3966,8 @@ patch(goto_null_p,int_new(Here));
 emitop(OP_SWAP);
 patch(goto_nnull_p,int_new(Here));
 
-/*:213*//*214:*/
-#line 4237 "lossless.w"
+/*:215*//*216:*/
+#line 4272 "lossless.w"
 
 compile_expression(cdr(arg),0);
 emitop(OP_PUSH);
@@ -3889,8 +3979,8 @@ goto_list_p= comefrom();
 emitq(Sym_ERR_UNEXPECTED);
 emitop(OP_ERROR);
 
-/*:214*//*215:*/
-#line 4251 "lossless.w"
+/*:216*//*217:*/
+#line 4286 "lossless.w"
 
 patch(goto_list_p,int_new(Here));
 emitop(OP_POP);
@@ -3898,15 +3988,15 @@ emitop(OP_SWAP);
 emitop(OP_JUMP_TRUE);
 goto_finish= comefrom();
 
-/*:215*//*216:*/
-#line 4266 "lossless.w"
+/*:217*//*218:*/
+#line 4301 "lossless.w"
 
 emitop(OP_POP);
 emitop(OP_LIST_REVERSE);
 emit(TRUE);
 emit(FALSE);
-/*217:*/
-#line 4273 "lossless.w"
+/*219:*/
+#line 4308 "lossless.w"
 
 emitop(OP_JUMP);
 goto_inject_start= comefrom();
@@ -3918,8 +4008,8 @@ emitop(OP_CYCLE);
 emitop(OP_CONS);
 emitop(OP_SWAP);
 
-/*:217*//*218:*/
-#line 4289 "lossless.w"
+/*:219*//*220:*/
+#line 4324 "lossless.w"
 
 patch(goto_inject_start,int_new(Here));
 emitop(OP_PUSH);
@@ -3930,18 +4020,18 @@ emitop(OP_POP);
 patch(goto_finish,int_new(Here));
 emitop(OP_POP);
 
+/*:220*/
+#line 4306 "lossless.w"
+
+
 /*:218*/
-#line 4271 "lossless.w"
-
-
-/*:216*/
-#line 4203 "lossless.w"
+#line 4238 "lossless.w"
 }
 }else
 error(ERR_UNIMPLEMENTED,NIL);
 
-/*:212*/
-#line 4122 "lossless.w"
+/*:214*/
+#line 4157 "lossless.w"
 
 }else{
 emitq(arg);
@@ -3950,8 +4040,8 @@ emitop(OP_CONS);
 }
 }
 
-/*:208*//*229:*/
-#line 4382 "lossless.w"
+/*:210*//*231:*/
+#line 4423 "lossless.w"
 
 llt_buffer*
 llt_alloc_imp(size_t len,
@@ -3966,24 +4056,44 @@ r->size= size;
 return r;
 }
 
-/*:229*//*230:*/
-#line 4398 "lossless.w"
+/*:231*//*232:*/
+#line 4438 "lossless.w"
 
 llt_buffer*
 llt_grow_imp(llt_buffer*old,
 size_t len)
 {
 llt_buffer*new;
-size_t ntotal,ototal;
-ototal= (old->len*old->size)+sizeof(llt_buffer);
+size_t ntotal;
 ntotal= (len*old->size)+sizeof(llt_buffer);
 ERR_OOM_P(new= realloc(old,ntotal));
+bzero((char*)new+sizeof(llt_buffer)+(new->size*new->len),
+new->size*(len-new->len));
 new->len= len;
 return new;
 }
 
-/*:230*//*233:*/
-#line 4432 "lossless.w"
+/*:232*//*233:*/
+#line 4456 "lossless.w"
+
+llt_buffer*
+llt_cat(const char*fmt,
+...)
+{
+llt_buffer*r= llt_alloc(0,char);
+int ret= -1;
+va_list ap;
+va_start(ap,fmt);
+while(ret<0||r->data[r->len-1]){
+llt_grow(r,BUFFER_SEGMENT);
+ret= vsnprintf(r->data,r->len,fmt,ap);
+}
+va_end(ap);
+return r;
+}
+
+/*:233*//*236:*/
+#line 4493 "lossless.w"
 
 llt_buffer*
 llt_serialise(cell obj,
@@ -3997,7 +4107,7 @@ r= llt_alloc(sizeof(cell),char);
 off= sizeof(cell);
 if(special_p(obj))
 return r;
-llt_grow_by(r,sizeof(char)+(sizeof(cell)*2));
+llt_grow(r,sizeof(char)+(sizeof(cell)*2));
 bcopy(&tag(obj),r->data+off,sizeof(char));
 off+= 1;
 if(vector_p(obj))
@@ -4015,7 +4125,7 @@ llt_extend_serial(r,llt_serialise(car(obj),offset_p),off);
 if(acdr_p(obj))
 llt_extend_serial(r,llt_serialise(cdr(obj),offset_p),off);
 if(vector_p(obj)){
-llt_grow_by(r,sizeof(cell)*VECTOR_HEAD);
+llt_grow(r,sizeof(cell)*VECTOR_HEAD);
 for(i= 1;i<=VECTOR_HEAD;i++){
 bcopy(&vector_ref(obj,-i),r->data+off,
 sizeof(cell));
@@ -4029,8 +4139,8 @@ off);
 return r;
 }
 
-/*:233*//*234:*/
-#line 4477 "lossless.w"
+/*:236*//*237:*/
+#line 4538 "lossless.w"
 
 llt_buffer*
 llt_copy_refs(cell obj)
@@ -4045,8 +4155,8 @@ llt_extend_serial(r,llt_copy_refs(cdr(obj)),off);
 return r;
 }
 
-/*:234*//*235:*/
-#line 4491 "lossless.w"
+/*:237*//*238:*/
+#line 4552 "lossless.w"
 
 boolean
 llt_compare_serial(llt_buffer*buf1,
@@ -4065,8 +4175,8 @@ free(buf2);
 return r;
 }
 
-/*:235*//*239:*/
-#line 4555 "lossless.w"
+/*:238*//*242:*/
+#line 4615 "lossless.w"
 
 void
 tap_plan(int plan)
@@ -4091,8 +4201,8 @@ Test_Plan= plan;
 printf("1..%d\n",plan);
 }
 
-/*:239*//*240:*/
-#line 4579 "lossless.w"
+/*:242*//*243:*/
+#line 4639 "lossless.w"
 
 boolean
 tap_ok(boolean result,
@@ -4105,8 +4215,8 @@ return btrue;
 return Test_Passing= bfalse;
 }
 
-/*:240*//*242:*/
-#line 4607 "lossless.w"
+/*:243*//*245:*/
+#line 4667 "lossless.w"
 
 char*
 test_msgf(char*tmsg,
@@ -4114,6 +4224,7 @@ char*tsrc,
 char*fmt,
 ...)
 {
+
 char ttmp[TEST_BUFSIZE]= {0};
 int ret;
 va_list ap;
@@ -4124,8 +4235,8 @@ snprintf(tmsg,TEST_BUFSIZE,"%s: %s",tsrc,ttmp);
 return tmsg;
 }
 
-/*:242*//*248:*/
-#line 4655 "lossless.w"
+/*:245*//*251:*/
+#line 4716 "lossless.w"
 
 cell
 testing_build_probe(cell was_Acc)
@@ -4138,26 +4249,26 @@ probe_push("Env",Env);
 return vms_pop();
 }
 
-/*:248*//*249:*/
-#line 4667 "lossless.w"
+/*:251*//*252:*/
+#line 4728 "lossless.w"
 
 void
-compile_testing_probe(cell op __unused,
+compile_testing_probe(cell op ll_unused,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 emitop(OP_PUSH);
 emitq(args);
 emitop(OP_TEST_PROBE);
 }
 
-/*:249*//*250:*/
-#line 4679 "lossless.w"
+/*:252*//*253:*/
+#line 4740 "lossless.w"
 
 void
-compile_testing_probe_app(cell op __unused,
+compile_testing_probe_app(cell op ll_unused,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 emitop(OP_PUSH);
 cts_push(args= list_reverse(args,NULL,NULL));
@@ -4171,8 +4282,8 @@ cts_pop();
 emitop(OP_TEST_PROBE);
 }
 
-/*:250*//*251:*/
-#line 4723 "lossless.w"
+/*:253*//*254:*/
+#line 4784 "lossless.w"
 
 void
 test_vm_state(char*prefix,
@@ -4204,8 +4315,8 @@ tmsgf("Prog_Main is completed"));
 
 }
 
-/*:251*//*252:*/
-#line 4754 "lossless.w"
+/*:254*//*255:*/
+#line 4815 "lossless.w"
 
 int
 test_count_free_list(void)
@@ -4221,12 +4332,28 @@ c= cdr(c);
 return r;
 }
 
-/*:252*//*352:*/
-#line 6684 "lossless.w"
+/*:255*//*264:*/
+#line 4994 "lossless.w"
+
+boolean
+llt_contains_p(cell haystack,
+cell needle)
+{
+for(;pair_p(haystack);haystack= cdr(haystack))
+if(needle==haystack||needle==car(haystack))
+return btrue;
+if(!null_p(haystack))
+if(needle==haystack)
+return btrue;
+return bfalse;
+}
+
+/*:264*//*356:*/
+#line 6759 "lossless.w"
 
 
-/*:352*//*502:*/
-#line 9438 "lossless.w"
+/*:356*//*520:*/
+#line 9857 "lossless.w"
 
 cell
 assoc_member(cell alist,
@@ -4264,21 +4391,21 @@ error(ERR_UNEXPECTED,r);
 return cadr(r);
 }
 
-/*:502*//*504:*/
-#line 9478 "lossless.w"
+/*:520*//*522:*/
+#line 9897 "lossless.w"
 
 
-/*:504*//*506:*/
-#line 9483 "lossless.w"
+/*:522*//*524:*/
+#line 9902 "lossless.w"
 
 void
 compile_symbol_p(cell op,
 cell args,
-boolean tail_p __unused)
+boolean tail_p ll_unused)
 {
 arity(op,args,1,0);
 compile_expression(cts_pop(),0);
 emitop(OP_SYMBOL_P);
 }
 
-/*:506*/
+/*:524*/

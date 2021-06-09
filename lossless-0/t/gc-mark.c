@@ -1,15 +1,15 @@
-/*296:*/
-#line 5570 "lossless.w"
+/*300:*/
+#line 5644 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 5571 "lossless.w"
+/*:258*/
+#line 5645 "lossless.w"
 
 
 enum llt_GC_Mark_flat{
@@ -60,12 +60,12 @@ enum llt_GC_Mark_recursion complex;
 enum llt_GC_Mark_flat simplex;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -81,8 +81,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -99,8 +99,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -114,12 +114,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -145,8 +145,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -154,8 +154,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -168,7 +168,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -178,12 +178,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 5621 "lossless.w"
+/*:263*/
+#line 5695 "lossless.w"
 
 
-/*297:*/
-#line 5646 "lossless.w"
+/*301:*/
+#line 5720 "lossless.w"
 
 boolean
 llt_GC_Mark_is_marked_p(cell c)
@@ -193,8 +193,8 @@ return special_p(c)||(mark_p(c)
 &&(!acdr_p(c)||llt_GC_Mark_is_marked_p(cdr(c))));
 }
 
-/*:297*//*298:*/
-#line 5661 "lossless.w"
+/*:301*//*302:*/
+#line 5735 "lossless.w"
 
 void
 llt_GC_Mark_unmark_m(cell c)
@@ -209,8 +209,8 @@ for(i= 0;i<vector_length(c);i++)
 llt_GC_Mark_unmark_m(vector_ref(c,i));
 }
 
-/*:298*//*299:*/
-#line 5679 "lossless.w"
+/*:302*//*303:*/
+#line 5753 "lossless.w"
 
 cell
 llt_GC_Mark_mklong(int x,
@@ -223,8 +223,8 @@ cdr(r)= vms_pop();
 return r;
 }
 
-/*:299*//*300:*/
-#line 5691 "lossless.w"
+/*:303*//*304:*/
+#line 5765 "lossless.w"
 
 cell
 llt_GC_Mark_mklonglong(int x,
@@ -241,8 +241,8 @@ cdr(r)= vms_pop();
 return r;
 }
 
-/*:300*//*301:*/
-#line 5707 "lossless.w"
+/*:304*//*305:*/
+#line 5781 "lossless.w"
 
 cell
 llt_GC_Mark_mkpair(boolean proper_p)
@@ -253,8 +253,8 @@ cdr(r)= NIL;
 return r;
 }
 
-/*:301*//*302:*/
-#line 5717 "lossless.w"
+/*:305*//*306:*/
+#line 5791 "lossless.w"
 
 cell
 llt_GC_Mark_mkvector(void)
@@ -267,8 +267,8 @@ vector_ref(r,i)= j;
 return r;
 }
 
-/*:302*//*303:*/
-#line 5732 "lossless.w"
+/*:306*//*307:*/
+#line 5806 "lossless.w"
 
 void
 llt_GC_Mark_prepare(llt_Fixture*fix)
@@ -276,8 +276,8 @@ llt_GC_Mark_prepare(llt_Fixture*fix)
 fix->copy= llt_serialise(fix->safe,btrue);
 }
 
-/*:303*//*304:*/
-#line 5739 "lossless.w"
+/*:307*//*308:*/
+#line 5813 "lossless.w"
 
 void
 llt_GC_Mark_destroy(llt_Fixture*fix)
@@ -285,8 +285,8 @@ llt_GC_Mark_destroy(llt_Fixture*fix)
 free(fix->copy);
 }
 
-/*:304*//*305:*/
-#line 5746 "lossless.w"
+/*:308*//*309:*/
+#line 5820 "lossless.w"
 
 void
 llt_GC_Mark_act(llt_Fixture*fix)
@@ -294,8 +294,8 @@ llt_GC_Mark_act(llt_Fixture*fix)
 mark(fix->safe);
 }
 
-/*:305*//*306:*/
-#line 5753 "lossless.w"
+/*:309*//*310:*/
+#line 5827 "lossless.w"
 
 boolean
 llt_GC_Mark_test(llt_Fixture*fix)
@@ -310,8 +310,8 @@ fpmsgf("the object is unchanged"));
 return ok;
 }
 
-/*:306*//*307:*/
-#line 5767 "lossless.w"
+/*:310*//*311:*/
+#line 5841 "lossless.w"
 
 void
 llt_GC_Mark_fix(llt_Fixture*fix,
@@ -328,8 +328,8 @@ fix->suffix= suffix;
 fix->safe= value;
 }
 
-/*:307*//*308:*/
-#line 5786 "lossless.w"
+/*:311*//*312:*/
+#line 5860 "lossless.w"
 
 #define mkfix(n,o) \
         llt_GC_Mark_fix(((llt_Fixture *) r->data) + (n), __func__, #o, o)
@@ -347,8 +347,8 @@ return r;
 }
 #undef mkfix
 
-/*:308*//*309:*/
-#line 5806 "lossless.w"
+/*:312*//*313:*/
+#line 5880 "lossless.w"
 
 void
 llt_GC_Mark__PLAV_prepare(llt_Fixture*fix)
@@ -370,8 +370,8 @@ break;
 llt_GC_Mark_prepare(fix);
 }
 
-/*:309*//*310:*/
-#line 5827 "lossless.w"
+/*:313*//*314:*/
+#line 5901 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Atom(void)
@@ -383,8 +383,8 @@ llt_GC_Mark_fix((llt_Fixture*)fix->data,__func__,NULL,NIL);
 return fix;
 }
 
-/*:310*//*311:*/
-#line 5838 "lossless.w"
+/*:314*//*315:*/
+#line 5912 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Long_Atom(void)
@@ -396,8 +396,8 @@ llt_GC_Mark_fix((llt_Fixture*)fix->data,__func__,NULL,NIL);
 return fix;
 }
 
-/*:311*//*312:*/
-#line 5849 "lossless.w"
+/*:315*//*316:*/
+#line 5923 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Pair(void)
@@ -414,8 +414,8 @@ fix[0].proper_pair_p= btrue;
 return r;
 }
 
-/*:312*//*313:*/
-#line 5865 "lossless.w"
+/*:316*//*317:*/
+#line 5939 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Vector(void)
@@ -427,16 +427,16 @@ llt_GC_Mark_fix((llt_Fixture*)fix->data,__func__,NULL,NIL);
 return fix;
 }
 
-/*:313*//*314:*/
-#line 5879 "lossless.w"
+/*:317*//*318:*/
+#line 5953 "lossless.w"
 
 void
 llt_GC_Mark__Recursive_prepare_imp(llt_Fixture*fix,
 enum llt_GC_Mark_recursion c)
 {
 switch(c){
-/*315:*/
-#line 5903 "lossless.w"
+/*319:*/
+#line 5977 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_PA:
 fix->safe= llt_GC_Mark_mkpair(bfalse);
@@ -464,11 +464,11 @@ car(fix->safe)= llt_GC_Mark_mklonglong(1024,2048,42);
 cdr(fix->safe)= llt_GC_Mark_mklonglong(4201,4820,24);
 break;
 
-/*:315*/
-#line 5885 "lossless.w"
+/*:319*/
+#line 5959 "lossless.w"
 
-/*316:*/
-#line 5930 "lossless.w"
+/*320:*/
+#line 6004 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_VA:
 fix->safe= llt_GC_Mark_mkvector();
@@ -496,11 +496,11 @@ vector_ref(fix->safe,4)= llt_GC_Mark_mklonglong(1024,2048,42);
 vector_ref(fix->safe,2)= llt_GC_Mark_mklonglong(4201,4820,24);
 break;
 
-/*:316*/
-#line 5886 "lossless.w"
+/*:320*/
+#line 5960 "lossless.w"
 
-/*317:*/
-#line 5957 "lossless.w"
+/*321:*/
+#line 6031 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_LL:
 fix->safe= llt_GC_Mark_mklong(1024,42);
@@ -509,11 +509,11 @@ case LLT_GC_MARK_RECURSIVE_LLL:
 fix->safe= llt_GC_Mark_mklonglong(1024,2048,42);
 break;
 
-/*:317*/
-#line 5887 "lossless.w"
+/*:321*/
+#line 5961 "lossless.w"
 
-/*318:*/
-#line 5965 "lossless.w"
+/*322:*/
+#line 6039 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_PPA:
 llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_PA);
@@ -540,11 +540,11 @@ llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_PV);
 fix->safe= cons(fix->safe,Tmp_Test);
 break;
 
-/*:318*/
-#line 5888 "lossless.w"
+/*:322*/
+#line 5962 "lossless.w"
 
-/*319:*/
-#line 5991 "lossless.w"
+/*323:*/
+#line 6065 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_PVA:
 llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_VA);
@@ -571,11 +571,11 @@ llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_VV);
 fix->safe= cons(fix->safe,Tmp_Test);
 break;
 
-/*:319*/
-#line 5889 "lossless.w"
+/*:323*/
+#line 5963 "lossless.w"
 
-/*320:*/
-#line 6017 "lossless.w"
+/*324:*/
+#line 6091 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_VPA:
 llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_PA);
@@ -614,11 +614,11 @@ vector_ref(fix->safe,4)= car(Tmp_Test);
 vector_ref(fix->safe,2)= cdr(Tmp_Test);
 break;
 
-/*:320*/
-#line 5890 "lossless.w"
+/*:324*/
+#line 5964 "lossless.w"
 
-/*321:*/
-#line 6055 "lossless.w"
+/*325:*/
+#line 6129 "lossless.w"
 
 case LLT_GC_MARK_RECURSIVE_VVA:
 llt_GC_Mark__Recursive_prepare_imp(fix,LLT_GC_MARK_RECURSIVE_VA);
@@ -657,8 +657,8 @@ vector_ref(fix->safe,4)= car(Tmp_Test);
 vector_ref(fix->safe,2)= cdr(Tmp_Test);
 break;
 
-/*:321*/
-#line 5891 "lossless.w"
+/*:325*/
+#line 5965 "lossless.w"
 
 }
 }
@@ -671,8 +671,8 @@ Tmp_Test= NIL;
 llt_GC_Mark_prepare(fix);
 }
 
-/*:314*//*322:*/
-#line 6099 "lossless.w"
+/*:318*//*326:*/
+#line 6173 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_P(void)
@@ -686,8 +686,8 @@ llt_GC_Mark_recfix(r,4,LLT_GC_MARK_RECURSIVE_PLL);
 return r;
 }
 
-/*:322*//*323:*/
-#line 6112 "lossless.w"
+/*:326*//*327:*/
+#line 6186 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_V(void)
@@ -701,8 +701,8 @@ llt_GC_Mark_recfix(r,4,LLT_GC_MARK_RECURSIVE_VLL);
 return r;
 }
 
-/*:323*//*324:*/
-#line 6125 "lossless.w"
+/*:327*//*328:*/
+#line 6199 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_L(void)
@@ -713,8 +713,8 @@ llt_GC_Mark_recfix(r,1,LLT_GC_MARK_RECURSIVE_LLL);
 return r;
 }
 
-/*:324*//*325:*/
-#line 6135 "lossless.w"
+/*:328*//*329:*/
+#line 6209 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_PP(void)
@@ -727,8 +727,8 @@ llt_GC_Mark_recfix(r,3,LLT_GC_MARK_RECURSIVE_PPV);
 return r;
 }
 
-/*:325*//*326:*/
-#line 6147 "lossless.w"
+/*:329*//*330:*/
+#line 6221 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_PV(void)
@@ -741,8 +741,8 @@ llt_GC_Mark_recfix(r,3,LLT_GC_MARK_RECURSIVE_PVV);
 return r;
 }
 
-/*:326*//*327:*/
-#line 6159 "lossless.w"
+/*:330*//*331:*/
+#line 6233 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_VP(void)
@@ -755,8 +755,8 @@ llt_GC_Mark_recfix(r,3,LLT_GC_MARK_RECURSIVE_VPV);
 return r;
 }
 
-/*:327*//*328:*/
-#line 6171 "lossless.w"
+/*:331*//*332:*/
+#line 6245 "lossless.w"
 
 llt_buffer*
 llt_GC_Mark__Recursive_VV(void)
@@ -769,8 +769,8 @@ llt_GC_Mark_recfix(r,3,LLT_GC_MARK_RECURSIVE_VVV);
 return r;
 }
 
-/*:328*/
-#line 5623 "lossless.w"
+/*:332*/
+#line 5697 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -789,4 +789,4 @@ llt_GC_Mark__Recursive_VV,
 NULL
 };
 
-/*:296*/
+/*:300*/

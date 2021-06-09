@@ -1,16 +1,16 @@
-/*498:*/
-#line 9342 "lossless.w"
+/*516:*/
+#line 9761 "lossless.w"
 
-/*261:*/
-#line 4942 "lossless.w"
+/*265:*/
+#line 5016 "lossless.w"
 
 #define LL_TEST 1
 #include "lossless.h"
 void test_main(void);
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 volatile boolean first= btrue;
 vm_init();
@@ -27,8 +27,8 @@ tap_plan(0);
 return EXIT_SUCCESS;
 }
 
-/*:261*/
-#line 9343 "lossless.w"
+/*:265*/
+#line 9762 "lossless.w"
 
 void
 test_main(void)
@@ -54,4 +54,4 @@ TEST_VMSTATE_RUNNING
 |TEST_VMSTATE_STACKS);
 }
 
-/*:498*/
+/*:516*/

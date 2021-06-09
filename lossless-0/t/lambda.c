@@ -1,16 +1,16 @@
-/*484:*/
-#line 8722 "lossless.w"
+/*502:*/
+#line 9141 "lossless.w"
 
-/*261:*/
-#line 4942 "lossless.w"
+/*265:*/
+#line 5016 "lossless.w"
 
 #define LL_TEST 1
 #include "lossless.h"
 void test_main(void);
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 volatile boolean first= btrue;
 vm_init();
@@ -27,8 +27,8 @@ tap_plan(0);
 return EXIT_SUCCESS;
 }
 
-/*:261*/
-#line 8723 "lossless.w"
+/*:265*/
+#line 9142 "lossless.w"
 
 void
 test_main(void)
@@ -48,8 +48,8 @@ sinn= sym("in-n");
 so= sym("outer");
 sout= sym("out");
 soutn= sym("out-n");
-/*485:*/
-#line 8755 "lossless.w"
+/*503:*/
+#line 9174 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= test_copy_env();
@@ -69,11 +69,11 @@ tap_again(ok,car(t)!=Prog,tmsgf("prog"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(Tmp_Test),tmsgf("(unchanged? Env)"));
 
-/*:485*/
-#line 8742 "lossless.w"
+/*:503*/
+#line 9161 "lossless.w"
 
-/*486:*/
-#line 8780 "lossless.w"
+/*504:*/
+#line 9199 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= cons(test_copy_env(),NIL);
@@ -97,11 +97,11 @@ tmsgf("(eq? (assoc-value T 'Env) (env.parent E))"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(cdr(Tmp_Test)),tmsgf("(unchanged? Env)"));
 
-/*:486*/
-#line 8743 "lossless.w"
+/*:504*/
+#line 9162 "lossless.w"
 
-/*487:*/
-#line 8821 "lossless.w"
+/*505:*/
+#line 9240 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= cons(test_copy_env(),NIL);
@@ -131,11 +131,11 @@ tmsgf("(parent? inner)"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(cdr(Tmp_Test)),tmsgf("(unchanged? Env)"));
 
-/*:487*/
-#line 8744 "lossless.w"
+/*:505*/
+#line 9163 "lossless.w"
 
-/*488:*/
-#line 8865 "lossless.w"
+/*506:*/
+#line 9284 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= cons(test_copy_env(),NIL);
@@ -169,11 +169,11 @@ tmsgf("(parent? inner)"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(cdr(Tmp_Test)),tmsgf("(unchanged? Env)"));
 
-/*:488*/
-#line 8745 "lossless.w"
+/*:506*/
+#line 9164 "lossless.w"
 
-/*489:*/
-#line 8920 "lossless.w"
+/*507:*/
+#line 9339 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= cons(test_copy_env(),NIL);
@@ -206,11 +206,11 @@ tmsgf("(parent? outer)"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(cdr(Tmp_Test)),tmsgf("(unchanged? Env)"));
 
-/*:489*/
-#line 8746 "lossless.w"
+/*:507*/
+#line 9165 "lossless.w"
 
-/*490:*/
-#line 8965 "lossless.w"
+/*508:*/
+#line 9384 "lossless.w"
 
 Env= env_extend(Root);
 Tmp_Test= cons(test_copy_env(),NIL);
@@ -253,9 +253,9 @@ tmsgf("(eq? E Env)"));
 test_vm_state_normal(prefix);
 tap_ok(test_compare_env(cdr(Tmp_Test)),tmsgf("(unchanged? Env)"));
 
-/*:490*/
-#line 8747 "lossless.w"
+/*:508*/
+#line 9166 "lossless.w"
 
 }
 
-/*:484*/
+/*:502*/

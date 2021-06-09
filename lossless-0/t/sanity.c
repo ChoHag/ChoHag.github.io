@@ -1,5 +1,5 @@
-/*262:*/
-#line 4972 "lossless.w"
+/*266:*/
+#line 5046 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
@@ -14,4 +14,4 @@ interpret();
 tap_pass("LossLess compiles and runs");
 }
 
-/*:262*/
+/*:266*/

@@ -1,15 +1,15 @@
-/*339:*/
-#line 6422 "lossless.w"
+/*343:*/
+#line 6496 "lossless.w"
 
-/*255:*/
-#line 4821 "lossless.w"
+/*258:*/
+#line 4878 "lossless.w"
 
 #define LL_TEST
 #include "lossless.h"
 #include "llt.h"
 
-/*:255*/
-#line 6423 "lossless.w"
+/*:258*/
+#line 6497 "lossless.w"
 
 
 struct llt_Fixture{
@@ -23,12 +23,12 @@ llt_buffer*safe_buf;
 llt_buffer*unsafe_buf;
 };
 
-/*256:*/
-#line 4826 "lossless.w"
+/*259:*/
+#line 4883 "lossless.w"
 
 int
-main(int argc __unused,
-char**argv __unused)
+main(int argc ll_unused,
+char**argv ll_unused)
 {
 llt_buffer*suite;
 if(argc> 1){
@@ -44,8 +44,8 @@ free(suite);
 tap_plan(0);
 }
 
-/*:256*//*257:*/
-#line 4845 "lossless.w"
+/*:259*//*260:*/
+#line 4902 "lossless.w"
 
 boolean
 llt_main(size_t count,
@@ -62,8 +62,8 @@ snprintf(buf,TEST_BUFSIZE,"%s (%s)",
 suite[i].name,suite[i].suffix);
 else
 snprintf(buf,TEST_BUFSIZE,"%s",suite[i].name);
-/*258:*/
-#line 4870 "lossless.w"
+/*261:*/
+#line 4927 "lossless.w"
 
 name= (char*)suite[i].name;
 suite[i].name= (char*)buf;
@@ -77,12 +77,12 @@ if(suite[i].destroy)
 suite[i].destroy(suite+i);
 suite[i].name= name;
 
-/*:258*/
-#line 4861 "lossless.w"
+/*:261*/
+#line 4918 "lossless.w"
 
 if((d= f0-f1)> 0&&!suite[i].skip_gc_p){
-/*259:*/
-#line 4887 "lossless.w"
+/*262:*/
+#line 4944 "lossless.w"
 
 int j,k;
 for(j= d;j>=0;j--){
@@ -108,8 +108,8 @@ else
 snprintf(buf,TEST_BUFSIZE,"%s",name);
 suite[i].name= buf;
 
-/*:259*/
-#line 4863 "lossless.w"
+/*:262*/
+#line 4920 "lossless.w"
 
 }
 tap_more(all,ok,buf);
@@ -117,8 +117,8 @@ tap_more(all,ok,buf);
 return all;
 }
 
-/*:257*//*260:*/
-#line 4912 "lossless.w"
+/*:260*//*263:*/
+#line 4969 "lossless.w"
 
 llt_buffer*
 llt_prepare(void)
@@ -131,7 +131,7 @@ r= llt_alloc(0,llt_Fixture);
 for(t= Test_Fixtures;*t!=NULL;t++){
 f= (*t)();
 old= r->len;
-llt_grow_by(r,f->len);
+llt_grow(r,f->len);
 bcopy(f->data,((llt_Fixture*)r->data)+old,
 f->len*f->size);
 free(f);
@@ -141,12 +141,12 @@ for(i= 0;i<(int)r->len;i++)
 return r;
 }
 
-/*:260*/
-#line 6436 "lossless.w"
+/*:263*/
+#line 6510 "lossless.w"
 
 
-/*340:*/
-#line 6459 "lossless.w"
+/*344:*/
+#line 6533 "lossless.w"
 
 
 
@@ -167,8 +167,8 @@ t= LLT_GC_VECTOR__SHAPE;
 for(p= (char*)fix->pattern;*p;p++){
 if(*s=='\0')
 s= LLT_GC_VECTOR__SIZE;
-/*341:*/
-#line 6496 "lossless.w"
+/*345:*/
+#line 6570 "lossless.w"
 
 v= vector_new((z= *s++-'0'),NIL);
 for(i= 0;i<z;i++){
@@ -190,57 +190,57 @@ break;
 }
 }
 
-/*:341*/
-#line 6479 "lossless.w"
+/*:345*/
+#line 6553 "lossless.w"
 
 if(*p=='L'){
-/*342:*/
-#line 6521 "lossless.w"
+/*346:*/
+#line 6595 "lossless.w"
 
 n= fix->cell_buf->len;
-llt_grow_by(fix->cell_buf,1);
-llt_grow_by(fix->offset_buf,1);
+llt_grow(fix->cell_buf,1);
+llt_grow(fix->offset_buf,1);
 ((cell*)fix->cell_buf->data)[n]= v;
 ((cell*)fix->offset_buf->data)[n]= vector_offset(v);
 
-/*:342*/
-#line 6481 "lossless.w"
+/*:346*/
+#line 6555 "lossless.w"
 
 vms_push(v);
 }else
 cts_push(v);
 }
-/*343:*/
-#line 6532 "lossless.w"
+/*347:*/
+#line 6606 "lossless.w"
 
 fix->safe_buf= llt_alloc(0,llt_buffer*);
 VMS= list_reverse_m(VMS,btrue);
 n= 0;
 for(v= VMS;!null_p(v);v= cdr(v),n++){
-llt_grow_by(fix->safe_buf,1);
+llt_grow(fix->safe_buf,1);
 ((llt_buffer**)fix->safe_buf->data)[n]
 = llt_serialise(car(v),bfalse);
 }
 
-/*:343*/
-#line 6486 "lossless.w"
+/*:347*/
+#line 6560 "lossless.w"
 
-/*344:*/
-#line 6546 "lossless.w"
+/*348:*/
+#line 6620 "lossless.w"
 
 fix->unsafe_buf= llt_alloc(0,cell);
 n= 0;
 for(v= CTS;!null_p(v);v= cdr(v))
 llt_extend_serial(fix->unsafe_buf,llt_copy_refs(car(v)),n);
 
-/*:344*/
-#line 6487 "lossless.w"
+/*:348*/
+#line 6561 "lossless.w"
 
 cts_reset();
 }
 
-/*:340*//*345:*/
-#line 6552 "lossless.w"
+/*:344*//*349:*/
+#line 6626 "lossless.w"
 
 boolean
 llt_GC_Vector_test(llt_Fixture*fix)
@@ -259,8 +259,8 @@ for(i= 0,p= (char*)fix->pattern;*p;i++,p++){
 if(*s=='\0')
 s= LLT_GC_VECTOR__SIZE;
 if(*p=='L'){
-/*346:*/
-#line 6580 "lossless.w"
+/*350:*/
+#line 6654 "lossless.w"
 
 liveok= llt_compare_serial(((llt_buffer**)fix->safe_buf->data)[live],
 ((cell*)fix->cell_buf->data)[live],bfalse);
@@ -270,12 +270,12 @@ liveok= vector_offset(((cell*)fix->cell_buf->data)[live])
 tap_more(ok,liveok,fpmsgf("(L-%d), object is defragmented",live));
 live++;
 
-/*:346*/
-#line 6570 "lossless.w"
+/*:350*/
+#line 6644 "lossless.w"
 
 }else{
-/*347:*/
-#line 6589 "lossless.w"
+/*351:*/
+#line 6663 "lossless.w"
 
 f= *s-'0';
 delta+= f?vector_realsize(f):0;
@@ -291,8 +291,8 @@ tap_more(ok,tagok,fpmsgf("(U-%d) object's tag is cleared",unused));
 tap_more(ok,freeok,fpmsgf("(U-%d) object is in the free list",unused));
 unused++;
 
-/*:347*/
-#line 6572 "lossless.w"
+/*:351*/
+#line 6646 "lossless.w"
 
 }
 s++;
@@ -301,8 +301,8 @@ free(freelist);
 return ok;
 }
 
-/*:345*//*348:*/
-#line 6604 "lossless.w"
+/*:349*//*352:*/
+#line 6678 "lossless.w"
 
 void
 llt_GC_Vector_destroy(llt_Fixture*fix)
@@ -314,8 +314,8 @@ free(fix->unsafe_buf);
 vm_init_imp();
 }
 
-/*:348*//*349:*/
-#line 6615 "lossless.w"
+/*:352*//*353:*/
+#line 6689 "lossless.w"
 
 void
 llt_GC_Vector_act(llt_Fixture*fix)
@@ -323,8 +323,8 @@ llt_GC_Vector_act(llt_Fixture*fix)
 fix->ret_val= gc_vectors();
 }
 
-/*:349*//*350:*/
-#line 6622 "lossless.w"
+/*:353*//*354:*/
+#line 6696 "lossless.w"
 
 void
 llt_GC_Vector_fix(llt_Fixture*fix,
@@ -337,8 +337,8 @@ fix->act= llt_GC_Vector_act;
 fix->test= llt_GC_Vector_test;
 }
 
-/*:350*//*351:*/
-#line 6637 "lossless.w"
+/*:354*//*355:*/
+#line 6711 "lossless.w"
 
 llt_buffer*
 llt_GC_Vector__All(void)
@@ -367,12 +367,13 @@ static char*test_patterns[]= {
 "UUULLLUUULLLUUU",
 NULL
 };
-llt_buffer*r= NULL;
+llt_buffer*r;
 llt_Fixture*f;
 char**p;
 int i;
+r= llt_alloc(0,llt_Fixture);
 for(p= test_patterns,i= 0;*p;p++,i++){
-llt_fix_append(r,1);
+r= llt_grow(r,1);
 f= ((llt_Fixture*)r->data)+r->len-1;
 llt_GC_Vector_fix(f,__func__);
 f->suffix= f->pattern= test_patterns[i];
@@ -380,8 +381,8 @@ f->suffix= f->pattern= test_patterns[i];
 return r;
 }
 
-/*:351*/
-#line 6438 "lossless.w"
+/*:355*/
+#line 6512 "lossless.w"
 
 
 llt_fixture Test_Fixtures[]= {
@@ -389,4 +390,4 @@ llt_GC_Vector__All,
 NULL
 };
 
-/*:339*/
+/*:343*/
