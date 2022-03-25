@@ -1,78 +1,48 @@
-LossLess is my pet programming language with grand plans. At its core
-it's based primarily on Scheme with ideas from Kernel. More information
-can be found at http://zeus.jtan.com/~chohag/lossless/ .
+To build on OpenBSD:
 
-LossLess' primary aims is to be approachable leaving no mystery. To this
-end its core---which is all that currently exists---is written in using
-the Literate Programming technique invented by Donald E. Knuth. In
-addition to an executable literate programming produces a document
-describing the implementation details of the program.
+        make DEBUG=-DLDEBUG     # To enable stdio-based printing
 
-The plan is that LossLess' online documentation will include appropriate
-links to the sections of this program that describe the component's
-precise implementation.
+        Alternatively set it in the environment:
+        export DEBUG=-DLDEBUG
 
-Building LossLess
------------------
+        No optimisation and better debugging symbols are also helpful:
+        export DEBUG=-DLDEBUG -O0 -g
 
-LossLess should build with any C compiler you can throw it at. For the
-time being there is a dependency on the standard library which I plan to
-reduce to the test suite only.
+Useful targets:
 
-There is no distributable LossLess yet, only a git source repository, so
-the build process requires CWEB to be installed, which is usually part
-of TeXlive (texlive_base in ports on OpenBSD). This package is
-ironically huge given the constraints that TeX was invented under.
+        make lossless           Lossless executable
 
-Debian's texlive-binaries package includes the ctangle and cweave
-binaries but they're useless without the rest of CWEB which is
-distributed between the texlive-base and texlive-extra-utils
-packages. Install all three.
+        make liblossless.so     As a linkable object
 
-Advice on the results of any other platforms' butchery is welcome.
+        make ffi.perl           Perl wrapper
 
-With that installed LossLess can be built with BSD or GNU make:
+        make test               Run losslees through a comprehensive test suite
 
-    make
+The available documentation can be read from within the development
+directory by updating MANPATH:
 
-The test suite depends on Perl's prove(1) test harness which is almost
-guaranteed to be installed already:
+        MANPATH=:$PWD/man
 
-    make test
+        make man/mandoc.db      Rebuild the manual pages' index
 
-There is no installer.
+Dependencies:
 
-Building LossLess without TeX or CWEB
--------------------------------------
+        C compiler
+        TeX *
+        CWEB *
 
-CWEB produces either a PDF or DVI file, or C source code. A package
-containing these is available at:
+        The makefile has been tuned to work equally with BSD and GNU make.
 
-        http://zeus.jtan.com/~chohag/lossless/lossless-0.tgz
+        The REPL, which is very much a work in progress, depends on the
+        editline library built into BSD.
 
-Building from these intermediate sources requires only a C compiler but
-it won't be possible (or rather, it won't be easy) to make changes to
-LossLess' source.
+CWEB and TeX are both part of the astronomically huge TeX Live
+distribution. The necessary parts can be installed on OpenBSD with
+"pkg_add texlive_texmf-minimal". Debian-based Linux distributions
+require "texlive-extra-utils". Reports for other systems and
+distributions are welcome --- the file you need which will ultimately
+pull in all the necessary TeX parts is "cwebmac.tex".
 
-Before using make on these intermediate source files first ensure that
-make considers them more up-to-date than the CWEB source:
-
-    touch *.pdf *.[ch] t/*.[ch]
-
-Then proceed as normal:
-
-    make
-
-and
-
-    make test
-
-There is still no installer.
-
-Additional Commentary
----------------------
-
-I have begun to document my experience developing LossLess at
-http://zeus.jtan.com/~chohag/blogless/
-
-http://chohag.github.io/ is occasionally updated.
+[*] Optional; TeX is required to produce the PDF files which aren't
+needed to build and run lossless and CWEB generates the C source
+and header files which are already included in the tarball distribution.

@@ -1,0 +1,36 @@
+#!/usr/bin/env perl
+
+use v5.16;
+use warnings;
+use strict;
+
+my @q;
+
+sub scan {
+        my $at = shift;
+        my @dir;
+        opendir (my $dh, $at) or die $!;
+        while (readdir $dh) {
+                next if /^\./;
+                say STDERR "WARNING: backup file" if /~$|\.bak$/i;
+                push @dir, $_;
+                push @q, "$at/$_" if -d "$at/$_";
+        }
+        closedir $dh;
+        return @dir;
+}
+
+push @q, ".";
+while (scalar @q) {
+        my $next = shift @q;
+        unlink "$next/index.html" if -e "$next/index.html";
+        my @files = scan $next;
+        open my $html, '>', "$next/index.html" or die $!;
+        $next =~ s/^\./\$/;
+        say $html "<html><head><title>$next</title></head>";
+        say $html "<body>\n<h1>$next</h1>";
+        for (sort @files) {
+                say $html "<p><a href=\"$_\">$_</a></p>";
+        }
+        say $html "</body>\n</html>";
+}

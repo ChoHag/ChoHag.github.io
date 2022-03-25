@@ -1,950 +1,1411 @@
+/*3:*/
+#line 113 "lossless.w"
+
 /*1:*/
-#line 51 "lossless.w"
+#line 83 "lossless.w"
 
-#ifndef LOSSLESS_H
-#define LOSSLESS_H
-/*4:*/
-#line 87 "lossless.w"
-
+#include <assert.h> 
 #include <ctype.h> 
 #include <limits.h> 
 #include <setjmp.h> 
 #include <stdarg.h> 
+#include <stdbool.h> 
+#include <stdint.h> 
 #include <stdio.h> 
 #include <stdlib.h> 
-#include <string.h>  
+#include <string.h> 
 #include <sys/types.h> 
-#ifndef LL_ALLOCATE
-#define LL_ALLOCATE reallocarray
-#endif
-
-/*:4*/
-#line 54 "lossless.w"
-
-/*526:*/
-#line 9921 "lossless.w"
-
-#ifndef ll_noreturn
-#  ifdef __GNUC__ 
-#    define ll_noreturn __attribute__ ((__noreturn__))
-#  else
-#    ifdef _Noreturn
-#      define ll_noreturn _Noreturn
-#    else
-#      define ll_noreturn 
-#    endif
-#  endif
-#endif
-
-#ifndef ll_unused
-#  ifdef __GNUC__ 
-#    define ll_unused __attribute__ ((__unused__))
-#  else
-#    define ll_unused 
-#  endif
-#endif
-
-#ifndef reallocarray 
-#define reallocarray(o,n,s) realloc((o), (n) * (s))
-#endif
-
-#ifndef strlcpy
-#define strlcpy(d,s,l) ((size_t) snprintf((d), (l), "%s", (s)))
-#endif
-
-/*:526*/
-#line 55 "lossless.w"
-
-#define bfalse 0
-#define btrue 1
-#define ERR_UNIMPLEMENTED "unimplemented"
-#define error(x,d) error_imp((x) ,NIL,(d) ) 
-#define ex_id car
-#define ex_detail cdr
-#define NIL -1
-#define FALSE -2
-#define TRUE -3
-#define END_OF_FILE -4
-#define VOID -5
-#define UNDEFINED -6 \
-
-#define TAG_NONE 0x00
-#define TAG_MARK 0x80
-#define TAG_STATE 0x40
-#define TAG_ACARP 0x20
-#define TAG_ACDRP 0x10
-#define TAG_FORMAT 0x3f \
-
-#define HEAP_SEGMENT 0x8000
-#define ERR_OOM "out-of-memory"
-#define ERR_OOM_P(p) do{if((p) ==NULL) error(ERR_OOM,NIL) ;}while(0) 
-#define ERR_DOOM_P(p,d) do{if((p) ==NULL) error(ERR_OOM,(d) ) ;}while(0) 
-#define enlarge_pool(p,m,t) do{ \
-void*n; \
-n= LL_ALLOCATE((p) ,(m) ,sizeof(t) ) ; \
-ERR_OOM_P(n) ; \
-(p) = n; \
-}while(0) 
-#define special_p(p) ((p) <0) 
-#define boolean_p(p) ((p) ==FALSE or(p) ==TRUE) 
-#define eof_p(p) ((p) ==END_OF_FILE) 
-#define false_p(p) ((p) ==FALSE) 
-#define null_p(p) ((p) ==NIL) 
-#define true_p(p) ((p) ==TRUE) 
-#define void_p(p) ((p) ==VOID) 
-#define undefined_p(p) ((p) ==UNDEFINED)  \
-
-#define mark_p(p) (!special_p(p) &&(TAG[(p) ]&TAG_MARK) ) 
-#define state_p(p) (!special_p(p) &&(TAG[(p) ]&TAG_STATE) ) 
-#define acar_p(p) (!special_p(p) &&(TAG[(p) ]&TAG_ACARP) ) 
-#define acdr_p(p) (!special_p(p) &&(TAG[(p) ]&TAG_ACDRP) ) 
-#define mark_clear(p) (TAG[(p) ]&= ~TAG_MARK) 
-#define mark_set(p) (TAG[(p) ]|= TAG_MARK) 
-#define state_clear(p) (TAG[(p) ]&= ~TAG_STATE) 
-#define state_set(p) (TAG[(p) ]|= TAG_STATE) 
-#define format(p) (TAG[(p) ]&TAG_FORMAT)  \
-
-#define tag(p) (TAG[(p) ])  \
-
-#define car(p) (CAR[(p) ]) 
-#define cdr(p) (CDR[(p) ]) 
-#define caar(p) (CAR[CAR[(p) ]]) 
-#define cadr(p) (CAR[CDR[(p) ]]) 
-#define cdar(p) (CDR[CAR[(p) ]]) 
-#define cddr(p) (CDR[CDR[(p) ]]) 
-#define caaar(p) (CAR[CAR[CAR[(p) ]]]) 
-#define caadr(p) (CAR[CAR[CDR[(p) ]]]) 
-#define cadar(p) (CAR[CDR[CAR[(p) ]]]) 
-#define caddr(p) (CAR[CDR[CDR[(p) ]]]) 
-#define cdaar(p) (CDR[CAR[CAR[(p) ]]]) 
-#define cdadr(p) (CDR[CAR[CDR[(p) ]]]) 
-#define cddar(p) (CDR[CDR[CAR[(p) ]]]) 
-#define cdddr(p) (CDR[CDR[CDR[(p) ]]]) 
-#define caaaar(p) (CAR[CAR[CAR[CAR[(p) ]]]]) 
-#define caaadr(p) (CAR[CAR[CAR[CDR[(p) ]]]]) 
-#define caadar(p) (CAR[CAR[CDR[CAR[(p) ]]]]) 
-#define caaddr(p) (CAR[CAR[CDR[CDR[(p) ]]]]) 
-#define cadaar(p) (CAR[CDR[CAR[CAR[(p) ]]]]) 
-#define cadadr(p) (CAR[CDR[CAR[CDR[(p) ]]]]) 
-#define caddar(p) (CAR[CDR[CDR[CAR[(p) ]]]]) 
-#define cadddr(p) (CAR[CDR[CDR[CDR[(p) ]]]]) 
-#define cdaaar(p) (CDR[CAR[CAR[CAR[(p) ]]]]) 
-#define cdaadr(p) (CDR[CAR[CAR[CDR[(p) ]]]]) 
-#define cdadar(p) (CDR[CAR[CDR[CAR[(p) ]]]]) 
-#define cdaddr(p) (CDR[CAR[CDR[CDR[(p) ]]]]) 
-#define cddaar(p) (CDR[CDR[CAR[CAR[(p) ]]]]) 
-#define cddadr(p) (CDR[CDR[CAR[CDR[(p) ]]]]) 
-#define cdddar(p) (CDR[CDR[CDR[CAR[(p) ]]]]) 
-#define cddddr(p) (CDR[CDR[CDR[CDR[(p) ]]]]) 
-#define FORMAT_CONS (TAG_ACARP|TAG_ACDRP|0x00) 
-#define FORMAT_APPLICATIVE (TAG_ACARP|TAG_ACDRP|0x01) 
-#define FORMAT_OPERATIVE (TAG_ACARP|TAG_ACDRP|0x02) 
-#define FORMAT_SYNTAX (TAG_ACARP|TAG_ACDRP|0x03) 
-#define FORMAT_ENVIRONMENT (TAG_ACARP|TAG_ACDRP|0x04) 
-#define FORMAT_EXCEPTION (TAG_ACARP|TAG_ACDRP|0x05) 
-#define FORMAT_INTEGER (TAG_ACDRP|0x00) 
-#define FORMAT_SYMBOL (TAG_NONE|0x00) 
-#define FORMAT_VECTOR (TAG_NONE|0x01) 
-#define FORMAT_COMPILER (TAG_NONE|0x02)  \
-
-#define atom_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) !=(TAG_ACARP|TAG_ACDRP) ) ) 
-#define pair_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==(TAG_ACARP|TAG_ACDRP) ) ) 
-#define applicative_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_APPLICATIVE) ) 
-#define compiler_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_COMPILER) ) 
-#define environment_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_ENVIRONMENT) ) 
-#define exception_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_EXCEPTION) ) 
-#define integer_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_INTEGER) ) 
-#define operative_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_OPERATIVE) ) 
-#define symbol_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_SYMBOL) ) 
-#define syntax_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_SYNTAX) ) 
-#define vector_p(p) (!special_p(p) &&((tag(p) &TAG_FORMAT) ==FORMAT_VECTOR) ) 
-#define cons(a,d) atom((a) ,(d) ,FORMAT_CONS) 
-#define VECTOR_CELL 0
-#define VECTOR_SIZE 1
-#define VECTOR_HEAD 2 \
-
-#define vector_realsize(s) ((s) +VECTOR_HEAD)  \
-
-#define vector_cell(v) (VECTOR[vector_offset(v) -(VECTOR_HEAD-VECTOR_CELL) ]) 
-#define vector_index(v) (car(v) ) 
-#define vector_length(v) (VECTOR[vector_offset(v) -(VECTOR_HEAD-VECTOR_SIZE) ]) 
-#define vector_offset(v) (cdr(v) ) 
-#define vector_ref(v,o) (VECTOR[vector_offset(v) +(o) ]) 
-#define ERR_UNDERFLOW "underflow"
-#define ERR_OVERFLOW "overflow"
-#define CHECK_UNDERFLOW(s) if(null_p(s) ) error(ERR_UNDERFLOW,VOID) 
-#define RTS_UNDERFLOW(p) if((p) <-1) error(ERR_UNDERFLOW,RTS) 
-#define RTS_OVERFLOW(p) if((p) > RTSp) error(ERR_OVERFLOW,RTS) 
-#define vms_clear() ((void) vms_pop() ) 
-#define cts_clear() ((void) cts_pop() ) 
-#define cts_reset() CTS= NIL
-#define RTS_SEGMENT 0x1000
-#define rts_clear(c) ((void) rts_pop(c) ) 
-#define rts_reset() Fp= RTSp= -1;
-#define sym(s) symbol((s) ,1) 
-#define symbol_length car
-#define symbol_offset cdr
-#define symbol_store(s) (SYMBOL+symbol_offset(s) ) 
-#define fixint_p(p) (integer_p(p) &&null_p(int_next(p) ) ) 
-#define smallint_p(p) (fixint_p(p)  \
-&&int_value(p) >=SCHAR_MIN \
-&&int_value(p) <=SCHAR_MAX) 
-#define int_value(p) ((int) (car(p) ) ) 
-#define int_next cdr
-#define ERR_IMPROPER_LIST "improper-list"
-#define ERR_BOUND "already-bound"
-#define ERR_UNBOUND "unbound" \
-
-#define env_empty() atom(NIL,NIL,FORMAT_ENVIRONMENT) 
-#define env_extend(e) atom((e) ,NIL,FORMAT_ENVIRONMENT) 
-#define env_layer cdr
-#define env_parent car
-#define env_empty_p(e) (environment_p(e) &&null_p(car(e) ) &&null_p(cdr(e) ) ) 
-#define env_root_p(e) (environment_p(e) &&null_p(car(e) ) ) 
-#define env_set_fail(e) do{ \
-vms_clear() ; \
-error((e) ,name) ; \
-}while(0) 
-#define applicative_closure cdr
-#define applicative_formals car
-#define applicative_new(f,e,p,i)  \
-closure_new_imp(FORMAT_APPLICATIVE,(f) ,(e) ,(p) ,(i) ) 
-#define operative_closure cdr
-#define operative_formals car
-#define operative_new(f,e,p,i)  \
-closure_new_imp(FORMAT_OPERATIVE,(f) ,(e) ,(p) ,(i) ) 
-#define compiler_cname(c) COMPILER[car(c) ].name
-#define compiler_fn(c) COMPILER[car(c) ].fn
-#define vm_init() do{ \
-if(setjmp(Goto_Begin) ) { \
-Acc= sym("ABORT") ; \
-return EXIT_FAILURE; \
-} \
-if(setjmp(Goto_Error) ) { \
-Acc= sym("ABORT") ; \
-return EXIT_FAILURE; \
-} \
-vm_init_imp() ; \
-}while(0) 
-#define vm_prepare() do{ \
-setjmp(Goto_Begin) ; \
-vm_prepare_imp() ; \
-}while(0) 
-#define vm_runtime() do{ \
-if(setjmp(Goto_Error) ) { \
-Ip= -1; \
-if(Ip<0)  \
-longjmp(Goto_Begin,1) ; \
-} \
-}while(0) 
-#define FRAME_HEAD 4
-#define frame_ip(f) rts_ref_abs((f) +1) 
-#define frame_prog(f) rts_ref_abs((f) +2) 
-#define frame_env(f) rts_ref_abs((f) +3) 
-#define frame_fp(f) rts_ref_abs((f) +4) 
-#define frame_set_ip(f,v) rts_set_abs((f) +1,(v) ) ;
-#define frame_set_prog(f,v) rts_set_abs((f) +2,(v) ) ;
-#define frame_set_env(f,v) rts_set_abs((f) +3,(v) ) ;
-#define frame_set_fp(f,v) rts_set_abs((f) +4,(v) ) ;
-#define ERR_INTERRUPTED "interrupted"
-#define ERR_RECURSION "recursion"
-#define ERR_UNEXPECTED "unexpected"
-#define WARN_AMBIGUOUS_SYMBOL "ambiguous" \
-
-#define READER_MAX_DEPTH 1024
-#define READ_SPECIAL -10
-#define READ_DOT -10
-#define READ_CLOSE_BRACKET -11
-#define READ_CLOSE_PAREN -12 \
-
-#define SYNTAX_DOTTED "dotted"
-#define SYNTAX_QUOTE "quote"
-#define SYNTAX_QUASI "quasiquote"
-#define SYNTAX_UNQUOTE "unquote"
-#define SYNTAX_UNSPLICE "unquote-splicing"
-#define CHAR_TERMINATE "()[]\"; \t\r\n"
-#define terminable_p(c) strchr(CHAR_TERMINATE,(c) ) 
-#define CHUNK_SIZE 0x80
-#define READSYM_EOF_P if(c==EOF) error(ERR_ARITY_SYNTAX,NIL) 
-#define BUFFER_SEGMENT 1024
-#define WRITER_MAX_DEPTH 1024
-#define append(b,r,c,s) do{ \
-ssize_t _l= strlen(c) ; \
-if((r) <=0)  \
-return-1; \
-if(strlcpy((b) ,(c) ,(r) ) >=(size_t) (r) )  \
-return-(r) ; \
-(s) += _l; \
-(b) += _l; \
-(r) -= _l; \
-}while(0) 
-#define append_write(b,r,w,d,s) do{ \
-ssize_t _l= write_form((w) ,(b) ,(r) ,(d) ) ; \
-if(_l<=0)  \
-return-1; \
-(s) += _l; \
-(b) += _l; \
-(r) -= _l; \
-}while(0) 
-#define skip(d) Ip+= (d) 
-#define fetch(d) vector_ref(Prog,Ip+(d) ) 
-#define ERR_COMPILE_DIRTY "compiler"
-#define ERR_UNCOMBINABLE "uncombinable"
-#define COMPILATION_SEGMENT 0x80 \
-
-#define emitop(o) emit(int_new(o) ) 
-#define emitq(o) do{emitop(OP_QUOTE) ;emit(o) ;}while(0) 
-#define patch(i,v) (vector_ref(Compilation,(i) ) = (v) ) 
-#define undot(p) ((syntax_p(p) &&car(p) ==Sym_SYNTAX_DOTTED) ?cdr(p) :(p) ) 
-#define ERR_ARITY_EXTRA "extra"
-#define ERR_ARITY_MISSING "missing"
-#define ERR_ARITY_SYNTAX "syntax"
-#define arity_error(e,c,a) error((e) ,cons((c) ,(a) ) ) 
-#define find_formal_duplicates(n,h) if(symbol_p(n) )  \
-for(cell d= (h) ;!null_p(d) ;d= cdr(d) )  \
-if(car(d) ==(n) )  \
-arity_error(ERR_ARITY_SYNTAX,op,args) ;
-#define bfixn(f,n) ((llt_Fixture*) ((f) ->data) ) [(n) ]
-#define bfix0(f) bfixn((f) ,(f) ->len-2) 
-#define bfix1(f) bfixn((f) ,(f) ->len-1) 
-#define bfix bfix1
-#define llt_alloc(l,t) llt_alloc_imp((l) ,sizeof(t) ) 
-#define llt_grow(o,d) ((o) = llt_grow_imp((o) ,(o) ->len+(d) ) ) 
-#define llt_extend_serial(buf,by,off) do{ \
-llt_buffer*q= (by) ; \
-llt_grow((buf) ,q->len) ; \
-bcopy(q->data,(buf) ->data+((off) *q->size) ,q->len*q->size) ; \
-(off) += q->len; \
-free(q) ; \
-}while(0) 
-#define tap_fail(m) tap_ok(bfalse,(m) ) 
-#define tap_pass(m) tap_ok(btrue,(m) ) 
-#define tap_again(t,r,m) tap_ok(((t) = ((t) &&(r) ) ) ,(m) )  \
-
-#define tap_more(t,r,m) (t) &= tap_ok((r) ,(m) ) 
-#define TEST_BUFSIZE 1024
-#define probe_push(n,o) do{ \
-vms_push(cons((o) ,NIL) ) ; \
-vms_set(cons(sym(n) ,vms_ref() ) ) ; \
-t= vms_pop() ; \
-vms_set(cons(t,vms_ref() ) ) ; \
-}while(0) 
-#define TEST_VMSTATE_RUNNING 0x01
-#define TEST_VMSTATE_NOT_RUNNING 0x00
-#define TEST_VMSTATE_INTERRUPTED 0x02
-#define TEST_VMSTATE_NOT_INTERRUPTED 0x00
-#define TEST_VMSTATE_VMS 0x04
-#define TEST_VMSTATE_CTS 0x08
-#define TEST_VMSTATE_RTS 0x10
-#define TEST_VMSTATE_STACKS (TEST_VMSTATE_VMS|TEST_VMSTATE_CTS|TEST_VMSTATE_RTS) 
-#define TEST_VMSTATE_ENV_ROOT 0x20
-#define TEST_VMSTATE_PROG_MAIN 0x40 \
-
-#define test_vm_state_full(p) test_vm_state((p) , \
-TEST_VMSTATE_NOT_RUNNING \
-|TEST_VMSTATE_NOT_INTERRUPTED \
-|TEST_VMSTATE_ENV_ROOT \
-|TEST_VMSTATE_PROG_MAIN \
-|TEST_VMSTATE_STACKS) 
-#define test_vm_state_normal(p) test_vm_state((p) , \
-TEST_VMSTATE_NOT_RUNNING \
-|TEST_VMSTATE_NOT_INTERRUPTED \
-|TEST_VMSTATE_PROG_MAIN \
-|TEST_VMSTATE_STACKS) 
-#define test_copy_env() Env
-#define test_compare_env(o) ((o) ==Env) 
-#define test_is_env(o,e) ((o) ==(e) ) 
-#define llt_GC_Mark_mkatom sym
-#define llt_GC_Mark_recfix(r,n,c) do{ \
-llt_GC_Mark_fix(((llt_Fixture*) (r) ->data) +(n) ,__func__,NULL,NIL) ; \
-((llt_Fixture*) (r) ->data) [(n) ].prepare= llt_GC_Mark__Recursive_prepare; \
-((llt_Fixture*) (r) ->data) [(n) ].complex= (c) ; \
-((llt_Fixture*) (r) ->data) [(n) ].suffix= #c; \
-}while(0) 
-#define LLT_GC_VECTOR__SIZE "2718281828459"
-#define LLT_GC_VECTOR__SHAPE "GNS"
-#define LLT_TEST_VARIABLE "test-variable"
-#define LLT_VALUE_MARCO "marco?"
-#define LLT_VALUE_POLO "polo!"
-#define LLT_VALUE_FISH "fish..."
-#define llt_Interpreter_test_compare(o) do{ \
-boolean ok= llt_compare_serial(fix->save_##o,(o) ,bfalse) ; \
-tap_more(all,ok,fpmsgf(#o" is unchanged") ) ; \
-}while(0) 
-#define CAT2(a,b) a/**/b
-#define CAT3(a,b,c) a/**/b/**/c
-#define CAT4(a,b,c,d) a/**/b/**/c/**/d
-#define LLTCC_EVAL_FIRST_COMPLEX(xc,xa) CAT3(CAT3(" OP_QUOTE (",xa,") OP_PUSH") , \
-CAT3(" OP_QUOTE ",xc," OP_LOOKUP") , \
-" OP_CONS OP_COMPILE OP_RUN") 
-#define LLTCC_EVAL_FIRST_LOOKUP(x) CAT3(" OP_QUOTE ",x," OP_LOOKUP") 
-#define LLTCC_EVAL_FIRST_QUOTE(x) CAT2(" OP_QUOTE ",x) 
-#define LLTCC_EVAL_SECOND_COMPLEX(xc,xa) CAT2(LLTCC_EVAL_FIRST_COMPLEX(xc,xa) ," OP_PUSH") 
-#define LLTCC_EVAL_SECOND_LOOKUP(x) CAT2(LLTCC_EVAL_FIRST_LOOKUP(x) ," OP_PUSH") 
-#define LLTCC_EVAL_SECOND_QUOTE(x) CAT2(LLTCC_EVAL_FIRST_QUOTE(x) ," OP_PUSH") 
-#define LLTCC_EVAL_VALIDATE(x) CAT3(" OP_ENVIRONMENT_P OP_JUMP_TRUE ",x, \
-" OP_QUOTE unexpected OP_ERROR") 
-#define LLTCC_EVAL_ONEARG() " OP_COMPILE OP_RUN OP_RETURN "
-#define LLTCC_EVAL_TWOARG() " OP_COMPILE OP_RUN_THERE OP_RETURN "
-#define LLTCC_LAMBDA_SUCCESS "(OP_QUOTE %s OP_PUSH" \
-" OP_LAMBDA 7 OP_JUMP 10 OP_QUOTE #<> OP_RETURN" \
-" OP_RETURN)"
-#define lltfix_lambda_success(f)  \
-fbuf= llt_Compiler__Lambda_build(__func__,fbuf,(f) ,"",NULL) 
-#define lltfix_lambda_fail_formals(f)  \
-fbuf= llt_Compiler__Lambda_build(__func__,fbuf,(f) ,"",NULL) 
-#define lltfix_lambda_fail_body(b,d)  \
-fbuf= llt_Compiler__Lambda_build(__func__,fbuf,"",(b) ,(d) ) 
-#define LLT_BUFLET_SEGMENT 100
-#define LLT_BUFLET_SLICE (LLT_BUFLET_SEGMENT/4) 
-#define straffix(b,c) do{ \
-*(b) ++= (c) ; \
-*(b) = '\0'; \
-}while(0) 
-#define straffix_both(b0,b1,c) do{ \
-char _c= (c) ; \
-straffix((b0) ,_c) ; \
-straffix((b1) ,_c) ; \
-}while(0) 
-#define TEST_AB "(lambda x)"
-#define TEST_AB_PRINT "(lambda x ...)"
-#define TEST_AC "(lambda x (test!probe))"
-#define TEST_AC_PRINT "("TEST_AC")"
-#define TEST_ACA_INNER "(lambda (T . x1) (test!probe))"
-#define TEST_ACA_OUTER "(lambda (L . x0) (L (test!probe)))"
-#define TEST_ACA "("TEST_ACA_OUTER"LAMBDA)"
-#define TEST_ACA_PRINT "("TEST_ACA_OUTER" (LAMBDA))"
-#define TEST_ACO_INNER_BODY "(test!probe-applying (eval (car A) E))"
-#define TEST_ACO_INNER "(vov ((A vov/args) (E vov/env))"TEST_ACO_INNER_BODY")"
-#define TEST_ACO_OUTER "(lambda (V . x0) (V (test!probe)))"
-#define TEST_ACO "("TEST_ACO_OUTER"VOV)"
-#define TEST_ACO_PRINT "((LAMBDA) (vov (...) "TEST_ACO_INNER_BODY")"
-#define TEST_ARA_INNER "(lambda (inner n) (test!probe))"
-#define TEST_ARA_BUILD "(lambda (outer n) "TEST_ARA_INNER")"
-#define TEST_ARA_PRINT TEST_ARA_BUILD
-#define TEST_ARA_CALL "((LAMBDA 'out 'out-n) 'in 'in-n)"
-#define TEST_ARO_INNER_BODY "(test!probe-applying A E)"
-#define TEST_ARO_INNER "(vov ((A vov/args) (E vov/env))"TEST_ARO_INNER_BODY")"
-#define TEST_ARO_BUILD "(lambda (outer n)"TEST_ARO_INNER")"
-#define TEST_ARO_CALL "((LAMBDA 'out 'out-n) 'in 'in-n)"
-#define TEST_ARO_PRINT "(LAMBDA (vov (...) "TEST_ARO_INNER_BODY"))"
-#define TEST_OB "(vov ((E vov/env)))"
-#define TEST_OB_PRINT "(vov ((E vov/env)) ...)"
-#define TEST_OC "(vov ((A vov/args) (E vov/env)) (test!probe-applying A E))"
-#define TEST_OC_PRINT "((vov (...) (test!probe-applying A E)))"
-#define TEST_OCA_INNER "(lambda x1 (test!probe))"
-#define TEST_OCA_OUTER "(vov ((A vov/args) (E vov/env))" \
-"(cons ((eval (car A) E)) (test!probe)))"
-#define TEST_OCA "("TEST_OCA_OUTER"LAMBDA)"
-#define TEST_OCA_PRINT "((VOV) "TEST_OCA_INNER")"
-#define TEST_OCO_INNER "(vov ((yE vov/env)) (test!probe))"
-#define TEST_OCO_OUTER "(vov ((xA vov/args) (xE vov/env))" \
-"(cons ((eval (car xA) xE)) (test!probe)))"
-#define TEST_OCO "("TEST_OCO_OUTER TEST_OCO_INNER")"
-#define TEST_OCO_PRINT "((VOV) "TEST_OCO_INNER")"
-#define TEST_ORA_INNER "(lambda (inner n) (test!probe))"
-#define TEST_ORA_MIXUP "(define! (current-environment) inner 'out)" \
-"(define! (current-environment) outer (eval (car yA) yE))" \
-"(define! (current-environment) n (eval (car (cdr yA)) yE))"
-#define TEST_ORA_BUILD "(vov ((yA vov/args) (yE vov/env))" \
-TEST_ORA_MIXUP TEST_ORA_INNER")"
-#define TEST_ORA_CALL "((VOV 'out 'out-n) 'in 'in-n)"
-#define TEST_ORA_PRINT "(vov (...) (lambda (inner n) (test!probe)))"
-#define TEST_ORO_INNER_BODY "(test!probe-applying (eval '(test!probe) oE))"
-#define TEST_ORO_INNER "(vov ((oE vov/env))"TEST_ORO_INNER_BODY")"
-#define TEST_ORO_BUILD "(vov ((A vov/args) (E vov/env))" \
-TEST_ORO_INNER")"
-#define TEST_ORO_CALL "((VOV 'out 'out-n) 'in 'in-n)"
-#define TEST_ORO_PRINT "(VOV (vov (...) (test!probe (eval '(test!probe) E))))"
-#define GOTO_FAIL "((lambda x (error fail)))"
-#define synquote_new(o) atom(Sym_SYNTAX_QUOTE,(o) ,FORMAT_SYNTAX) 
-
-#line 56 "lossless.w"
-
-/*146:*/
-#line 2776 "lossless.w"
-
-enum{
-OP_APPLY,
-OP_APPLY_TAIL,
-OP_CAR,
-OP_CDR,
-OP_COMPILE,
-OP_CONS,
-OP_CYCLE,
-OP_ENVIRONMENT_P,
-OP_ENV_MUTATE_M,
-OP_ENV_QUOTE,
-OP_ENV_ROOT,
-OP_ENV_SET_ROOT_M,
-OP_ERROR,
-OP_HALT,
-OP_JUMP,
-OP_JUMP_FALSE,
-OP_JUMP_TRUE,
-OP_LAMBDA,
-OP_LIST_P,
-OP_LIST_REVERSE,
-OP_LIST_REVERSE_M,
-OP_LOOKUP,
-OP_NIL,
-OP_NOOP,
-OP_NULL_P,
-OP_PAIR_P,
-OP_PEEK,
-OP_POP,
-OP_PUSH,
-OP_QUOTE,
-OP_RETURN,
-OP_RUN,
-OP_RUN_THERE,
-OP_SET_CAR_M,
-OP_SET_CDR_M,
-OP_SNOC,
-OP_SWAP,
-OP_SYMBOL_P,
-OP_SYNTAX,
-OP_VOV,
-#ifdef LL_TEST
-/*247:*/
-#line 4694 "lossless.w"
-
-OP_TEST_PROBE,
-
-/*:247*/
-#line 2819 "lossless.w"
-
-#endif
-OPCODE_MAX
-};
-
-/*:146*//*147:*/
-#line 2828 "lossless.w"
-
-#ifndef LL_TEST
-enum{
-OP_TEST_UNDEFINED_BEHAVIOUR= 0xf00f,
-/*247:*/
-#line 4694 "lossless.w"
-
-OP_TEST_PROBE,
-
-/*:247*/
-#line 2832 "lossless.w"
-
-};
-#endif
-
-/*:147*//*244:*/
-#line 4662 "lossless.w"
-
-
-
-#define tmsgf(...)test_msgf(msg, prefix, __VA_ARGS__)
-
-/*:244*/
-#line 57 "lossless.w"
-
-/*5:*/
-#line 108 "lossless.w"
-
-typedef int32_t cell;
-typedef int boolean;
-typedef cell predicate;
-
-/*:5*//*90:*/
-#line 1567 "lossless.w"
-
-typedef void(*native)(cell,cell,boolean);
-typedef struct{
-char*name;
-native fn;
-}primitive;
-
-/*:90*//*148:*/
-#line 2836 "lossless.w"
-
-typedef struct{
-char*name;
-int nargs;
-}opcode;
-
-/*:148*//*229:*/
-#line 4410 "lossless.w"
-
-typedef struct{
-size_t len;
-size_t size;
-char data[];
-}llt_buffer;
-
-/*:229*/
-#line 58 "lossless.w"
-
-/*8:*/
-#line 150 "lossless.w"
-
-void ll_noreturn error_imp(char*,cell,cell);
-void warn(char*,cell);
-
-/*:8*//*14:*/
-#line 268 "lossless.w"
-
-void new_cells_segment(void);
-
-/*:14*//*22:*/
-#line 419 "lossless.w"
-
-cell atom(cell,cell,char);
-
-/*:22*//*27:*/
-#line 469 "lossless.w"
-
-void new_vector_segment(void);
-
-/*:27*//*36:*/
-#line 534 "lossless.w"
-
-cell vector_new(int,cell);
-cell vector_new_imp(int,boolean,cell);
-cell vector_new_list(cell,int);
-cell vector_sub(cell,int,int,int,int,cell);
-
-/*:36*//*43:*/
-#line 641 "lossless.w"
-
-int gc(void);
-int gc_vectors(void);
-void mark(cell);
-int sweep(void);
-
-/*:43*//*51:*/
-#line 857 "lossless.w"
-
-cell cts_pop(void);
-void cts_push(cell);
-cell cts_ref(void);
-void cts_set(cell);
-cell rts_pop(int);
-void rts_prepare(int);
-void rts_push(cell);
-cell rts_ref(int);
-cell rts_ref_abs(int);
-void rts_set(int,cell);
-void rts_set_abs(int,cell);
-cell vms_pop(void);
-void vms_push(cell);
-cell vms_ref(void);
-void vms_set(cell);
-
-/*:51*//*59:*/
-#line 1056 "lossless.w"
-
-cell symbol(char*,boolean);
-void symbol_expand(void);
-void symbol_reify(cell);
-boolean symbol_same_p(cell,cell);
-cell symbol_steal(char*);
-
-/*:59*//*70:*/
-#line 1191 "lossless.w"
-
-cell int_new_imp(int,cell);
-cell int_new(int);
-
-/*:70*//*73:*/
-#line 1224 "lossless.w"
-
-int list_length(cell);
-predicate list_p(cell,predicate,cell*);
-cell list_reverse_m(cell,boolean);
-
-/*:73*//*81:*/
-#line 1382 "lossless.w"
-
-cell env_here(cell,cell);
-cell env_lift_stack(cell,cell);
-cell env_search(cell,cell);
-void env_set(cell,cell,cell,boolean);
-
-/*:81*//*88:*/
-#line 1540 "lossless.w"
-
-cell closure_new_imp(char,cell,cell,cell,cell);
-
-/*:88*//*97:*/
-#line 1687 "lossless.w"
-
-void vm_init_imp(void);
-void vm_prepare_imp(void);
-void vm_reset(void);
-
-/*:97*//*104:*/
-#line 1765 "lossless.w"
-
-void frame_consume(void);
-void frame_enter(cell,cell,cell);
-void frame_leave(void);
-void frame_push(int);
-
-/*:104*//*109:*/
-#line 1840 "lossless.w"
-
-void interpret(void);
-
-/*:109*//*115:*/
-#line 1941 "lossless.w"
-
-int read_byte(void);
-cell read_cstring(char*);
-cell read_form(void);
-cell read_list(cell);
-cell read_number(void);
-cell read_sexp(void);
-cell read_special(void);
-cell read_symbol(void);
-void unread_byte(char);
-int useful_byte(void);
-
-/*:115*//*137:*/
-#line 2459 "lossless.w"
-
-ssize_t write_applicative(cell,char*,ssize_t,int);
-ssize_t write_bytecode(cell,char*,ssize_t,int);
-ssize_t write_compiler(cell,char*,ssize_t,int);
-ssize_t write_environment(cell,char*,ssize_t,int);
-ssize_t write_integer(cell,char*,ssize_t,int);
-ssize_t write_list(cell,char*,ssize_t,int);
-ssize_t write_operative(cell,char*,ssize_t,int);
-ssize_t write_symbol(cell,char*,ssize_t,int);
-ssize_t write_syntax(cell,char*,ssize_t,int);
-ssize_t write_vector(cell,char*,ssize_t,int);
-ssize_t write_form(cell,char*,ssize_t,int);
-
-/*:137*//*169:*/
-#line 3187 "lossless.w"
-
-cell arity(cell,cell,int,boolean);
-cell arity_next(cell,cell,cell,boolean,boolean);
-int comefrom(void);
-cell compile(cell);
-cell compile_main(void);
-void compile_car(cell,cell,boolean);
-void compile_cdr(cell,cell,boolean);
-void compile_conditional(cell,cell,boolean);
-void compile_cons(cell,cell,boolean);
-void compile_define_m(cell,cell,boolean);
-void compile_env_current(cell,cell,boolean);
-void compile_env_root(cell,cell,boolean);
-void compile_error(cell,cell,boolean);
-void compile_eval(cell,cell,boolean);
-void compile_expression(cell,boolean);
-void compile_lambda(cell,cell,boolean);
-void compile_list(cell,cell,boolean);
-void compile_null_p(cell,cell,boolean);
-void compile_pair_p(cell,cell,boolean);
-void compile_quasicompiler(cell,cell,cell,int,boolean);
-void compile_quasiquote(cell,cell,boolean);
-void compile_quote(cell,cell,boolean);
-void compile_set_car_m(cell,cell,boolean);
-void compile_set_cdr_m(cell,cell,boolean);
-void compile_set_m(cell,cell,boolean);
-void compile_symbol_p(cell,cell,boolean);
-void compile_vov(cell,cell,boolean);
-void emit(cell);
-
-/*:169*//*208:*/
-#line 4124 "lossless.w"
-
-void compile_quasicompiler(cell,cell,cell,int,boolean);
-
-/*:208*//*230:*/
-#line 4417 "lossless.w"
-
-llt_buffer*llt_alloc_imp(size_t,size_t);
-llt_buffer*llt_cat(const char*,...);
-llt_buffer*llt_grow_imp(llt_buffer*,size_t);
-
-/*:230*//*235:*/
-#line 4481 "lossless.w"
-
-llt_buffer*llt_serialise(cell,boolean);
-boolean llt_compare_serial(llt_buffer*,cell,boolean);
-llt_buffer*llt_copy_refs(cell);
-
-/*:235*//*239:*/
-#line 4598 "lossless.w"
-
-#ifdef LL_TEST
-void tap_plan(int);
-boolean tap_ok(boolean,char*);
-int test_count_free_list(void);
-char*test_msgf(char*,char*,char*,...);
-void test_vm_state(char*,int);
-#endif
-
-/*:239*//*246:*/
-#line 4689 "lossless.w"
-
-void compile_testing_probe(cell,cell,boolean);
-void compile_testing_probe_app(cell,cell,boolean);
-cell testing_build_probe(cell);
-
-/*:246*//*489:*/
-#line 8920 "lossless.w"
-
-#define TEST_EVAL_FOUND(var) \
-if (undefined_p(var))        \
-         (var) =  cadar(t);   \
-else                         \
-        fmore =  btrue;
-#define TEST_EVAL_FIND                                      \
-feval =  fprobe =  fenv =  fprog =  UNDEFINED;                    \
-fmore =  bfalse;                                               \
-while (!null_p(t)) {                                          \
-        if (caar(t) == sym("alt-test!probe")) {             \
-                TEST_EVAL_FOUND(fprobe);                    \
-        } else if (caar(t) == sym("eval")) {                \
-                TEST_EVAL_FOUND(feval);                     \
-        } else if (caar(t) == sym("testing-environment")) { \
-                TEST_EVAL_FOUND(fenv);                      \
-        } else if (caar(t) == sym("testing-program")) {     \
-                TEST_EVAL_FOUND(fprog);                     \
-        } else                                                \
-                fmore =  btrue;                                \
-        t =  cdr(t);                                           \
-}
-void test_integrate_eval_unchanged(char*,cell,cell);
-
-/*:489*//*519:*/
-#line 9852 "lossless.w"
-
-cell assoc_member(cell,cell);
-cell assoc_content(cell,cell);
-cell assoc_value(cell,cell);
-
-/*:519*/
-#line 59 "lossless.w"
-
-/*7:*/
-#line 145 "lossless.w"
-
-extern volatile boolean Error_Handler;
-extern jmp_buf Goto_Begin;
-extern jmp_buf Goto_Error;
-
-/*:7*//*13:*/
-#line 263 "lossless.w"
-
-extern cell*CAR,*CDR,Cells_Free;
-extern char*TAG;
-extern int Cells_Poolsize,Cells_Segment;
-
-/*:13*//*20:*/
-#line 413 "lossless.w"
-
-extern cell Tmp_CAR,Tmp_CDR;
-
-/*:20*//*26:*/
-#line 465 "lossless.w"
-
-extern cell*VECTOR;
-extern int Vectors_Free,Vectors_Poolsize,Vectors_Segment;
-
-/*:26*//*31:*/
-#line 518 "lossless.w"
-
-extern cell Zero_Vector;
-
-/*:31*//*42:*/
-#line 638 "lossless.w"
-
-extern cell*ROOTS;
-
-/*:42*//*48:*/
-#line 845 "lossless.w"
-
-extern cell CTS,RTS,VMS;
-extern int RTS_Size,RTSp;
-
-/*:48*//*57:*/
-#line 1048 "lossless.w"
-
-extern cell Symbol_Table;
-extern char*SYMBOL;
-extern int Symbol_Free,Symbol_Poolsize;
-
-/*:57*//*67:*/
-#line 1171 "lossless.w"
-
-extern cell*Small_Int;
-
-/*:67*//*79:*/
-#line 1364 "lossless.w"
-
-extern cell Sym_ERR_BOUND,Sym_ERR_UNBOUND;
-
-/*:79*//*92:*/
-#line 1585 "lossless.w"
-
-extern primitive*COMPILER;
-
-/*:92*//*94:*/
-#line 1636 "lossless.w"
-
-extern boolean Interrupt,Running;
-extern cell Acc,Env,Prog,Prog_Main,Root;
-extern int Ip;
-
-/*:94*//*102:*/
-#line 1755 "lossless.w"
-
-extern int Fp;
-
-/*:102*//*113:*/
-#line 1927 "lossless.w"
-
-extern char Putback[2],*Read_Pointer;
-extern int Read_Level;
-extern cell Sym_ERR_UNEXPECTED,Sym_SYNTAX_DOTTED,Sym_SYNTAX_QUASI;
-extern cell Sym_SYNTAX_QUOTE,Sym_SYNTAX_UNQUOTE,Sym_SYNTAX_UNSPLICE;
-
-/*:113*//*149:*/
-#line 2842 "lossless.w"
-
-extern opcode OP[OPCODE_MAX];
-
-/*:149*//*168:*/
-#line 3183 "lossless.w"
-
-extern int Here;
-extern cell Compilation;
-
-/*:168*//*183:*/
-#line 3395 "lossless.w"
-
-extern cell Sym_ERR_ARITY_EXTRA,Sym_ERR_ARITY_MISSING,Sym_ERR_ARITY_SYNTAX;
-
-/*:183*//*223:*/
-#line 4351 "lossless.w"
-
-#ifdef LL_TEST
-extern int Allocate_Success;
-#endif
-
-/*:223*//*226:*/
-#line 4377 "lossless.w"
-
-extern cell Tmp_Test;
-
-/*:226*//*241:*/
-#line 4612 "lossless.w"
-
-extern int Test_Plan,Next_Test;
-
-/*:241*/
-#line 60 "lossless.w"
-
-#endif
+#include <unistd.h> 
 
 /*:1*/
+#line 114 "lossless.w"
+
+/*322:*/
+#line 7519 "lossless.w"
+
+#ifdef __GNUC__ 
+#       define Lunused __attribute__ ((__unused__))
+#else
+#       define Lunused 
+#endif
+
+#ifdef __GNUC__ 
+#       define Lnoreturn __attribute__ ((__noreturn__))
+#else
+#       ifdef _Noreturn
+#               define Lnoreturn _Noreturn
+#       else
+#               define Lnoreturn 
+#       endif
+#endif
+
+#ifdef LDEBUG
+#       define LDEBUG_P true
+#else
+#       define LDEBUG_P false
+#endif
+
+#if EOF == -1
+#       define FAIL -2
+#else
+#       define FAIL -1
+#endif
+
+#define ckd_add(r,x,y) __builtin_add_overflow((x), (y), (r))
+#define ckd_sub(r,x,y) __builtin_sub_overflow((x), (y), (r))
+#define ckd_mul(r,x,y) __builtin_mul_overflow((x), (y), (r))
+
+/*:322*/
+#line 115 "lossless.w"
+
+#define PTR_TAG_SHIFT 56
+#define PTR_ADDRESS(p) ((intptr_t(p) ) &((1ull<<PTR_TAG_SHIFT) -1) ) 
+#define PTR_TAG_MASK(p) ((intptr_t(p) ) &~((1ull<<PTR_TAG_SHIFT) -1) ) 
+#define PTR_TAG(p) (PTR_TAG_MASK(p) >>PTR_TAG_SHIFT) 
+#define PTR_SET_TAG(p,s) ((p) = (((p) &PTR_ADDRESS(p) ) |((s) <<PTR_TAG_SHIFT) ) )  \
+
+#define shared 
+#define unique __thread \
+
+#define failure_p(O) ((O) !=LERR_NONE) 
+#define unwind(J,E,T,S) do{ \
+assert((E) !=LERR_NONE) ; \
+if(T) Tmp_ier= NIL; \
+if(S) stack_clear(S) ; \
+siglongjmp(*(J) ,(E) ) ; \
+}while(0) 
+#define NIL ((cell) 0) 
+#define LFALSE ((cell) 1) 
+#define LTRUE ((cell) 3) 
+#define VOID ((cell) 5)  \
+
+#define LEOF ((cell) 7)  \
+
+#define UNDEFINED ((cell) 13) 
+#define FIXED ((cell) 15)  \
+
+#define null_p(O) ((intptr_t) (O) ==0) 
+#define special_p(O) (null_p(O) ||((intptr_t) (O) ) &1) 
+#define boolean_p(O) ((O) ==LFALSE||(O) ==LTRUE) 
+#define false_p(O) ((O) ==LFALSE) 
+#define true_p(O) ((O) ==LTRUE) 
+#define void_p(O) ((O) ==VOID) 
+#define eof_p(O) ((O) ==LEOF) 
+#define undefined_p(O) ((O) ==UNDEFINED) 
+#define fix_p(O) (((O) &FIXED) ==FIXED) 
+#define defined_p(O) (!undefined_p(O) )  \
+
+#define predicate(O) ((O) ?LTRUE:LFALSE)  \
+
+#define LTAG_LIVE 0x80
+#define LTAG_DONE 0x40
+#define LTAG_DSIN 0x20
+#define LTAG_DDEX 0x10
+#define LTAG_BOTH (LTAG_DSIN|LTAG_DDEX) 
+#define LTAG_FORM (LTAG_BOTH|0x0f) 
+#define LTAG_TDEX 0x02
+#define LTAG_TSIN 0x01
+#define LTAG_NONE 0x00 \
+
+#define TAG(O) (ATOM_TO_TAG((O) ) ) 
+#define TAG_SET_M(O,V) (ATOM_TO_TAG((O) ) = (V) )  \
+
+#define ATOM_LIVE_P(O) (TAG(O) &LTAG_LIVE) 
+#define ATOM_CLEAR_LIVE_M(O) (TAG_SET_M((O) ,TAG(O) &~LTAG_LIVE) ) 
+#define ATOM_SET_LIVE_M(O) (TAG_SET_M((O) ,TAG(O) |LTAG_LIVE) ) 
+#define ATOM_MORE_P(O) (TAG(O) &LTAG_DONE) 
+#define ATOM_CLEAR_MORE_M(O) (TAG_SET_M((O) ,TAG(O) &~LTAG_DONE) ) 
+#define ATOM_SET_MORE_M(O) (TAG_SET_M((O) ,TAG(O) |LTAG_DONE) ) 
+#define ATOM_FORM(O) (TAG(O) &LTAG_FORM) 
+#define ATOM_SIN_DATUM_P(O) (TAG(O) &LTAG_DSIN) 
+#define ATOM_DEX_DATUM_P(O) (TAG(O) &LTAG_DDEX) 
+#define ATOM_SIN_THREADABLE_P(O) (TAG(O) &LTAG_TSIN) 
+#define ATOM_DEX_THREADABLE_P(O) (TAG(O) &LTAG_TDEX) 
+#define FORM_NONE (LTAG_NONE|0x00) 
+#define FORM_ARRAY (LTAG_NONE|0x01) 
+#define FORM_COLLECTED (LTAG_NONE|0x02) 
+#define FORM_FIX (LTAG_NONE|0x03) 
+#define FORM_HEAP (LTAG_NONE|0x04) 
+#define FORM_KEYTABLE (LTAG_NONE|0x05) 
+#define FORM_RECORD (LTAG_NONE|0x06) 
+#define FORM_RUNE (LTAG_NONE|0x07) 
+#define FORM_SEGMENT_INTERN (LTAG_NONE|0x08) 
+#define FORM_SYMBOL (LTAG_NONE|0x09) 
+#define FORM_SYMBOL_INTERN (LTAG_NONE|0x0a)  \
+
+#define FORM_PRIMITIVE (LTAG_DDEX|0x00) 
+#define FORM_SEGMENT (LTAG_DDEX|0x01)  \
+
+#define FORM_PAIR (LTAG_BOTH|0x00) 
+#define FORM_APPLICATIVE (LTAG_BOTH|0x01) 
+#define FORM_ENVIRONMENT (LTAG_BOTH|0x02) 
+#define FORM_NOTE (LTAG_BOTH|0x03) 
+#define FORM_OPERATIVE (LTAG_BOTH|0x04)  \
+
+#define FORM_ROPE (LTAG_BOTH|0x08) 
+#define FORM_TROPE_SIN (LTAG_BOTH|0x09) 
+#define FORM_TROPE_DEX (LTAG_BOTH|0x0a) 
+#define FORM_TROPE_BOTH (LTAG_BOTH|0x0b) 
+#define FORM_TREE (LTAG_BOTH|0x0c) 
+#define FORM_TTREE_SIN (LTAG_BOTH|0x0d) 
+#define FORM_TTREE_DEX (LTAG_BOTH|0x0e) 
+#define FORM_TTREE_BOTH (LTAG_BOTH|0x0f)  \
+
+#define form(O) (TAG(O) &LTAG_FORM) 
+#define form_p(O,F) (!special_p(O) &&form(O) ==FORM_##F) 
+#define pair_p(O) (form_p((O) ,PAIR) ) 
+#define array_p(O) (form_p((O) ,ARRAY) ) 
+#define null_array_p(O) ((O) ==Null_Array) 
+#define collected_p(O) (form_p((O) ,COLLECTED) ) 
+#define environment_p(O) (form_p((O) ,ENVIRONMENT) ) 
+#define keytable_p(O) (form_p((O) ,KEYTABLE) ||null_array_p(O) ) 
+#define note_p(O) (form_p((O) ,NOTE) ) 
+#define record_p(O) (form_p((O) ,RECORD) ) 
+#define rune_p(O) (form_p((O) ,RUNE) )  \
+
+#define segment_intern_p(O) (form_p((O) ,SEGMENT_INTERN) ) 
+#define segment_stored_p(O) (form_p((O) ,SEGMENT) ) 
+#define segment_p(O) (segment_intern_p(O) ||segment_stored_p(O) ) 
+#define symbol_intern_p(O) (form_p((O) ,SYMBOL_INTERN) ) 
+#define symbol_stored_p(O) (form_p((O) ,SYMBOL) ) 
+#define symbol_p(O) (symbol_intern_p(O) ||symbol_stored_p(O) )  \
+
+#define character_p(O) (eof_p(O) ||rune_p(O) ) 
+#define arraylike_p(O) (array_p(O) ||keytable_p(O) ||record_p(O) ) 
+#define pointer_p(O) (segment_stored_p(O) ||arraylike_p(O) ||form_p((O) ,HEAP) )  \
+
+#define primitive_p(O) (form_p((O) ,PRIMITIVE) ) 
+#define closure_p(O) (form_p((O) ,APPLICATIVE) ||form_p((O) ,OPERATIVE) ) 
+#define program_p(O) (closure_p(O) ||primitive_p(O) ) 
+#define applicative_p(O) ((closure_p(O) &&form_p((O) ,APPLICATIVE) ) || \
+primitive_applicative_p(O) ) 
+#define operative_p(O) ((closure_p(O) &&form_p((O) ,OPERATIVE) ) || \
+primitive_operative_p(O) )  \
+
+#define RECORD_ROPE_ITERATOR -1
+#define RECORD_ENVIRONMENT_ITERATOR -2
+#define RECORD_LEXEME -3
+#define RECORD_LEXAR -4
+#define RECORD_SYNTAX -5 \
+
+#define rope_iter_p(O) (form_p((O) ,RECORD) &&record_id(O)  \
+==fix(RECORD_ROPE_ITERATOR) ) 
+#define lexeme_p(O) (form_p((O) ,RECORD) &&record_id(O)  \
+==fix(RECORD_LEXEME) ) 
+#define lexar_p(O) (form_p((O) ,RECORD) &&record_id(O)  \
+==fix(RECORD_LEXAR) ) 
+#define syntax_p(O) (form_p((O) ,RECORD) &&record_id(O)  \
+==fix(RECORD_SYNTAX) )  \
+
+#define fix_value(O) ((fixed) ((O) >>FIX_SHIFT) ) 
+#define HEAP_CHUNK 0x1000
+#define HEAP_MASK 0x0fff
+#define HEAP_BOOKEND (sizeof(Osegment) +sizeof(Oheap) ) 
+#define HEAP_LEFTOVER ((HEAP_CHUNK-HEAP_BOOKEND) /(TAG_BYTES+WIDE_BYTES) ) 
+#define HEAP_LENGTH ((int) HEAP_LEFTOVER) 
+#define HEAP_HEADER ((HEAP_CHUNK/WIDE_BYTES) -HEAP_LENGTH)  \
+
+#define ATOM_TO_ATOM(O) ((Oatom*) (O) ) 
+#define ATOM_TO_HEAP(O) (SEGMENT_TO_HEAP(ATOM_TO_SEGMENT(O) ) ) 
+#define ATOM_TO_INDEX(O) (((((intptr_t) (O) ) &HEAP_MASK) >>CELL_SHIFT) -HEAP_HEADER) 
+#define ATOM_TO_SEGMENT(O) ((Osegment*) (((intptr_t) (O) ) &~HEAP_MASK) ) 
+#define HEAP_TO_SEGMENT(O) (ATOM_TO_SEGMENT(O) ) 
+#define SEGMENT_TO_HEAP(O) ((Oheap*) (O) ->address) 
+#define HEAP_TO_LAST(O) ((Oatom*) (((intptr_t) HEAP_TO_SEGMENT(O) ) +HEAP_CHUNK) )  \
+
+#define ATOM_TO_TAG(O) (ATOM_TO_HEAP(O) ->tag[ATOM_TO_INDEX(O) ]) 
+#define cons(A,D,F) (atom(Theap,(A) ,(D) ,FORM_PAIR,(F) ) ) 
+#define lcaar(O) (lcar(lcar(O) ) ) 
+#define lcadr(O) (lcar(lcdr(O) ) ) 
+#define lcdar(O) (lcdr(lcar(O) ) ) 
+#define lcddr(O) (lcdr(lcdr(O) ) ) 
+#define lcaaar(O) (lcar(lcar(lcar(O) ) ) ) 
+#define lcaadr(O) (lcar(lcar(lcdr(O) ) ) ) 
+#define lcadar(O) (lcar(lcdr(lcar(O) ) ) ) 
+#define lcaddr(O) (lcar(lcdr(lcdr(O) ) ) ) 
+#define lcdaar(O) (lcdr(lcar(lcar(O) ) ) ) 
+#define lcdadr(O) (lcdr(lcar(lcdr(O) ) ) ) 
+#define lcddar(O) (lcdr(lcdr(lcar(O) ) ) ) 
+#define lcdddr(O) (lcdr(lcdr(lcdr(O) ) ) ) 
+#define lcaaaar(O) (lcar(lcar(lcar(lcar(O) ) ) ) ) 
+#define lcaaadr(O) (lcar(lcar(lcar(lcdr(O) ) ) ) ) 
+#define lcaadar(O) (lcar(lcar(lcdr(lcar(O) ) ) ) ) 
+#define lcaaddr(O) (lcar(lcar(lcdr(lcdr(O) ) ) ) ) 
+#define lcadaar(O) (lcar(lcdr(lcar(lcar(O) ) ) ) ) 
+#define lcadadr(O) (lcar(lcdr(lcar(lcdr(O) ) ) ) ) 
+#define lcaddar(O) (lcar(lcdr(lcdr(lcar(O) ) ) ) ) 
+#define lcadddr(O) (lcar(lcdr(lcdr(lcdr(O) ) ) ) ) 
+#define lcdaaar(O) (lcdr(lcar(lcar(lcar(O) ) ) ) ) 
+#define lcdaadr(O) (lcdr(lcar(lcar(lcdr(O) ) ) ) ) 
+#define lcdadar(O) (lcdr(lcar(lcdr(lcar(O) ) ) ) ) 
+#define lcdaddr(O) (lcdr(lcar(lcdr(lcdr(O) ) ) ) ) 
+#define lcddaar(O) (lcdr(lcdr(lcar(lcar(O) ) ) ) ) 
+#define lcddadr(O) (lcdr(lcdr(lcar(lcdr(O) ) ) ) ) 
+#define lcdddar(O) (lcdr(lcdr(lcdr(lcar(O) ) ) ) ) 
+#define lcddddr(O) (lcdr(lcdr(lcdr(lcdr(O) ) ) ) )  \
+
+#define pointer(O) ((void*) lcar(O) ) 
+#define pointer_datum(O) (lcdr(O) ) 
+#define pointer_erase_m(O) (lcar_set_m((O) ,(cell) NULL) ) 
+#define pointer_set_datum_m(O,D)  \
+(lcdr_set_m((O) ,(cell) (D) ) ) 
+#define pointer_set_m(O,D) (lcar_set_m((O) ,(cell) (D) ) )  \
+
+#define segint_p(O) (segment_intern_p(O) ) 
+#define segint_address(O) (segint_base(O) ->buffer) 
+#define segint_base(O) ((Ointern*) (O) ) 
+#define segint_header(O) ((long) 0) 
+#define segint_length(O) ((long) segint_base(O) ->length) 
+#define segint_set_length_m(O,V)  \
+(segint_base(O) ->length= (V) ) 
+#define segint_owner(O) (O) 
+#define segint_stride(O) ((long) 1)  \
+
+#define segbuf_base(O) ((Osegment*) pointer(O) ) 
+#define segbuf_address(O) (segbuf_base(O) ->address) 
+#define segbuf_header(O) (segbuf_base(O) ->header) 
+#define segbuf_length(O) (segbuf_base(O) ->length) 
+#define segbuf_next(O) (segbuf_base(O) ->next) 
+#define segbuf_owner(O) (segbuf_base(O) ->owner) 
+#define segbuf_prev(O) (segbuf_base(O) ->prev) 
+#define segbuf_stride(O) (segbuf_base(O) ->stride?segbuf_base(O) ->stride:1)  \
+
+#define segment_address(O) (segint_p(O) ?segint_address(O) :segbuf_address(O) ) 
+#define segment_base(O) (segint_p(O) ?segint_base(O) :segbuf_base(O) ) 
+#define segment_header(O) (segint_p(O) ?segint_header(O) :segbuf_header(O) ) 
+#define segment_length(O) (segint_p(O) ?segint_length(O) :segbuf_length(O) ) 
+#define segment_owner(O) (segint_p(O) ?segint_owner(O) :segbuf_owner(O) ) 
+#define segment_stride(O) (segint_p(O) ?segint_stride(O) :segbuf_stride(O) )  \
+
+#define segment_set_owner_m(O,N) do{ \
+assert(pointer_p(O) ) ; \
+segbuf_owner(O) = (N) ; \
+}while(0) 
+#define segment_alloc(H,L,S,A,F) segment_alloc_imp(NULL,(H) ,(L) ,(S) ,(A) ,(F) ) 
+#define segment_new(H,L,S,A,F) segment_new_imp(Theap,(H) ,(L) ,(S) ,(A) , \
+FORM_SEGMENT,(F) ) 
+#define collected_datum(O) (lcar(O) ) 
+#define collected_set_datum_m(O,V) (lcar_set_m((O) ,(V) ) ) 
+#define atom_saved_p(O) (ATOM_TO_HEAP(O) ->pair==NULL) 
+#define array_progress(O) (fix_value(pointer_datum(O) ) ) 
+#define array_set_progress_m(O,V) (pointer_set_datum_m((O) ,fix(V) ) ) 
+#define array_length(O) (segment_length(O) ) 
+#define array_address(O) ((cell*) segment_address(O) ) 
+#define array_new(L,F) ((L) ==0?Null_Array: \
+array_new_imp((L) ,NIL,FORM_ARRAY,(F) ) ) 
+#define KEYTABLE_MINLENGTH 8
+#define KEYTABLE_MAXLENGTH (INT_MAX>>1)  \
+
+#define keytable_free(O) (null_array_p(O) ?0: \
+fix_value(array_ref((O) ,array_length(O) -1) ) ) 
+#define keytable_free_p(O) (keytable_free(O) > 0) 
+#define keytable_length(O) (null_array_p(O) ?(long) 0:array_length(O) -1) 
+#define keytable_ref(O,I) (array_ref((O) ,(I) ) ) 
+#define keytable_set_free_m(O,V) (array_set_m((O) ,array_length(O) -1,fix(V) ) ) 
+#define SYMBOL_CHUNK 0x1000
+#define SYMBOL_MAX INT_MAX
+#define SYMBOL_BUFFER_MAX LONG_MAX
+#define Symbol_Buffer_Length (segment_length(Symbol_Buffer) ) 
+#define Symbol_Buffer_Base ((char*) segment_address(Symbol_Buffer) ) 
+#define Symbol_Table_Length (keytable_length(Symbol_Table) ) 
+#define Symbol_Table_ref(i) (keytable_ref(Symbol_Table,(i) ) )  \
+
+#define symint_p(O) (symbol_intern_p(O) ) 
+#define symint_length(O) (((Ointern*) (O) ) ->length) 
+#define symint_buffer(O) (((Ointern*) (O) ) ->buffer) 
+#define symint_hash(O) (hash_buffer(symint_buffer(O) , \
+symint_length(O) ,NULL) )  \
+
+#define symbuf_length(O) ((long) lcar(O) ) 
+#define symbuf_set_length_m(O,V) (lcar_set_m((O) ,(V) ) ) 
+#define symbuf_offset(O) ((long) lcdr(O) ) 
+#define symbuf_set_offset_m(O,V) (lcdr_set_m((O) ,(V) ) ) 
+#define symbuf_store(O) ((Osymbol*) (Symbol_Buffer_Base+symbuf_offset(O) ) ) 
+#define symbuf_buffer(O) (symbuf_store(O) ->buffer) 
+#define symbuf_hash(O) (symbuf_store(O) ->hash)  \
+
+#define symbol_length(O) (symint_p(O) ?symint_length(O) :symbuf_length(O) ) 
+#define symbol_buffer(O) (symint_p(O) ?symint_buffer(O) :symbuf_buffer(O) ) 
+#define symbol_hash(O) (symint_p(O) ?symint_hash(O) :symbuf_hash(O) ) 
+#define symbol_new_segment(O,F) (symbol_new_buffer(segment_address(O) , \
+segment_length(O) ,(F) ) ) 
+#define symbol_new_const(O) (symbol_new_buffer((O) ,0,NULL) ) 
+#define dryad_datum(O) (lcar(O) ) 
+#define dryad_link(O) (lcdr(O) ) 
+#define dryad_sin(O) (lcadr(O) ) 
+#define dryad_dex(O) (lcddr(O) ) 
+#define dryad_sin_p(O) (!null_p(dryad_sin(O) ) ) 
+#define dryad_dex_p(O) (!null_p(dryad_dex(O) ) ) 
+#define dryad_set_sin_m(O,V) (lcar_set_m(lcdr(O) ,(V) ) ) 
+#define dryad_set_dex_m(O,V) (lcdr_set_m(lcdr(O) ,(V) ) )  \
+
+#define dryadic_p(O) (!special_p(O) && \
+(form(O) &FORM_ROPE) ==FORM_ROPE) 
+#define dlist_p(O) (dryadic_p(O) &&pair_p(dryad_link(O) ) ) 
+#define treeish_p(O) (dryadic_p(O) &&!dlist_p(O) ) 
+#define tree_p(O) (treeish_p(O) && \
+(form(O) &FORM_TREE) ==FORM_TREE) 
+#define plain_tree_p(O) (treeish_p(O) &&form_p((O) ,TREE) ) 
+#define rope_p(O) (treeish_p(O) && \
+(form(O) &FORM_TREE) ==FORM_ROPE) 
+#define plain_rope_p(O) (treeish_p(O) &&form_p((O) ,ROPE) )  \
+
+#define treeish_sin_threadable_p(O) (treeish_p(O) &&(form(O) &LTAG_TSIN) ) 
+#define treeish_dex_threadable_p(O) (treeish_p(O) &&(form(O) &LTAG_TDEX) ) 
+#define tree_sin_threadable_p(O) (tree_p(O) &&treeish_sin_threadable_p(O) ) 
+#define tree_dex_threadable_p(O) (tree_p(O) &&treeish_dex_threadable_p(O) ) 
+#define tree_threadable_p(O) (tree_sin_threadable_p(O) &&tree_dex_threadable_p(O) ) 
+#define rope_sin_threadable_p(O) (rope_p(O) &&treeish_sin_threadable_p(O) ) 
+#define rope_dex_threadable_p(O) (rope_p(O) &&treeish_dex_threadable_p(O) ) 
+#define rope_threadable_p(O) (rope_sin_threadable_p(O) &&rope_dex_threadable_p(O) )  \
+
+#define treeish_sin_has_thread_p(O) (treeish_sin_threadable_p(O) &&dryad_sin_p(O) && \
+(form(dryad_link(O) ) &LTAG_TSIN) ) 
+#define treeish_dex_has_thread_p(O) (treeish_dex_threadable_p(O) &&dryad_dex_p(O) && \
+(form(dryad_link(O) ) &LTAG_TDEX) ) 
+#define tree_sin_has_thread_p(O) (tree_p(O) &&treeish_sin_has_thread_p(O) ) 
+#define tree_dex_has_thread_p(O) (tree_p(O) &&treeish_dex_has_thread_p(O) ) 
+#define rope_sin_has_thread_p(O) (rope_p(O) &&treeish_sin_has_thread_p(O) ) 
+#define rope_dex_has_thread_p(O) (rope_p(O) &&treeish_dex_has_thread_p(O) )  \
+
+#define tree_thread_set_sin_thread_m(O) (TAG_SET_M(dryad_link(O) , \
+form(dryad_link(O) |LTAG_TSIN) ) ) 
+#define tree_thread_set_sin_live_m(O) (TAG_SET_M(dryad_link(O) , \
+form(dryad_link(O) &~LTAG_TSIN) ) ) 
+#define tree_thread_set_dex_thread_m(O) (TAG_SET_M(dryad_link(O) , \
+form(dryad_link(O) |LTAG_TDEX) ) ) 
+#define tree_thread_set_dex_live_m(O) (TAG_SET_M(dryad_link(O) , \
+form(dryad_link(O) &~LTAG_TDEX) ) )  \
+
+#define tree_thread_live_sin(O) (treeish_sin_has_thread_p(O) ?NIL:dryad_sin(O) ) 
+#define tree_thread_live_dex(O) (treeish_dex_has_thread_p(O) ?NIL:dryad_dex(O) ) 
+#define tree_thread_next_sin(O,F) (anytree_next_sin((O) ,(F) ) ) 
+#define tree_thread_next_dex(O,F) (anytree_next_dex((O) ,(F) ) )  \
+
+#define treeish_sinmost(O,F) treeish_edge_imp((O) ,true,(F) ) 
+#define treeish_dexmost(O,F) treeish_edge_imp((O) ,false,(F) ) 
+#define anytree_next_imp(IN,OTHER)  \
+cell \
+anytree_next_##IN(cell o, \
+sigjmp_buf*failure)  \
+{ \
+cell r; \
+ \
+assert(dryadic_p(o) ) ; \
+r= dryad_##IN(o) ; \
+if(!treeish_##IN##_threadable_p(o) || \
+!treeish_##IN##_has_thread_p(o) )  \
+return r; \
+return treeish_##OTHER##most(r,failure) ; \
+}
+#define dlist_datum(o) (dryad_datum(o) ) 
+#define dlist_prev(o) (dryad_sin(o) ) 
+#define dlist_next(o) (dryad_dex(o) ) 
+#define dlist_set(DIRECTION,YIN,YANG)  \
+void \
+dlist_set_##DIRECTION##_m(cell hither, \
+cell yon)  \
+{ \
+assert(dlist_p(hither) ) ; \
+assert(dlist_p(yon) ) ; \
+YIN##_set_m(dryad_link(hither) ,yon) ; \
+YANG##_set_m(dryad_link(yon) ,hither) ; \
+}
+#define dlist_prepend_m(O,L) dlist_append_m(dlist_prev(O) ,(L) ) 
+#define dlist_prepend_datum_m(O,D,F) dlist_append_datum_m(dlist_prev(O) ,(D) ,(F) ) 
+#define RECORD_MAXLENGTH (INT_MAX>>1) 
+#define record_next(O) (array_ref((O) ,0) ) 
+#define record_next_p(O) (segment_p(record_next(O) ) ) 
+#define record_id(O) (record_next_p(O) ?pointer_datum(record_next(O) ) : \
+record_next(O) ) 
+#define record_base(O) (record_next_p(O) ?segment_address(record_next(O) ) : \
+(char*) NULL) 
+#define record_offset(O) (record_next_p(O) ?1:0) 
+#define record_cell(O,I) (array_ref((O) ,(I) +1) ) 
+#define record_set_cell_m(O,I,D)  \
+(array_set_m((O) ,(I) +1,(D) ) ) 
+#define record_object(T,O,A) (((T) record_base(O) ) ->A) 
+#define record_set_object_m(T,O,A,D)  \
+(record_object((T) ,(O) ,(A) ) = (D) ) 
+#define UCP_MAX 0x10ffff
+#define UCP_SURROGATE_MIN 0xd800
+#define UCP_SURROGATE_MAX 0xe000
+#define UCP_NONBMP_MIN 0xfdd0
+#define UCP_NONBMP_MAX 0xfdef
+#define UCP_REPLACEMENT 0xfffd
+#define UCP_REPLACEMENT_LENGTH 3
+#define UCP_NONCHAR_MASK 0xfffe
+#define utfio_noncharacter_p(C) (utfio_nonplane_p(C) ||utfio_nonrange_p(C) ) 
+#define utfio_nonplane_p(C) (((C) ->value&UCP_NONCHAR_MASK) ==UCP_NONCHAR_MASK) 
+#define utfio_nonrange_p(C) ((C) ->value>=UCP_NONBMP_MIN&& \
+(C) ->value<=UCP_NONBMP_MAX) 
+#define utfio_overlong_p(C) ((C) ->value<=UTFIO[(C) ->offset-1].max) 
+#define utfio_surrogate_p(C) ((C) ->value>=UCP_SURROGATE_MIN&& \
+(C) ->value<=UCP_SURROGATE_MAX) 
+#define utfio_too_large_p(C) ((C) ->value> UCP_MAX) 
+#define UCPVAL(V) (((V) &0x001fffff) ) 
+#define UCPLEN(V) (((V) &0x00e00000) >>21) 
+#define UCPFAIL(V) (((V) &0xff000000) >>24)  \
+
+#define rune_raw(O) ((CELL_BITS>=32) ?(int32_t) lcar(O) : \
+((((int32_t) lcar(O) &0xffff) <<16) |((int32_t) lcdr(O) &0xffff) ) ) 
+#define rune_failure_p(O) (!!UCPFAIL(rune_raw(O) ) ) 
+#define rune_failure(O) (UCPFAIL(rune_raw(O) ) ) 
+#define rune_parsed(O) (UCPLEN(rune_raw(O) ) ) 
+#define rune(O) (rune_failure_p(O) ?UCP_REPLACEMENT: \
+UCPVAL(rune_raw(O) ) )  \
+
+#define rune_new_value(V,F) (rune_new_utfio(utfio_write(V) ,(F) ) ) 
+#define rope_segment(O) (dryad_datum(O) ) 
+#define rope_base(O) ((Orope*) segment_address(rope_segment(O) ) ) 
+#define rope_blength(O) ((long) segment_length(rope_segment(O) ) -1) 
+#define rope_cplength(O) (rope_base(O) ->cplength) 
+#define rope_glength(O) (rope_base(O) ->glength) 
+#define rope_buffer(O) (rope_base(O) ->buffer) 
+#define rope_first(O,F) (treeish_sinmost((O) ,(F) ) ) 
+#define rope_last(O,F) (treeish_dexmost((O) ,(F) ) ) 
+#define rope_next(O,F) (anytree_next_dex((O) ,(F) ) ) 
+#define rope_prev(O,F) (anytree_next_sin((O) ,(F) ) ) 
+#define rope_byte(O,B) (rope_buffer(O) [(B) ]) 
+#define rope_node_new_empty(S,D,F) rope_node_new_length((S) ,(D) ,0,NIL,NIL,(F) ) 
+#define rope_new_length(S,D,L,F) rope_node_new_length((S) ,(D) ,(L) ,NIL,NIL,(F) ) 
+#define ROPE_ITER_TWINE 0
+#define ROPE_ITER_LENGTH 1 \
+
+#define rope_iter(O) ((Orope_iter*) record_base(O) ) 
+#define rope_iter_twine(O) (record_cell((O) ,ROPE_ITER_TWINE) ) 
+#define rope_iter_set_twine_m(O,D) (record_set_cell_m((O) ,ROPE_ITER_TWINE,(D) ) ) 
+#define STACK_CHUNK 0x100
+#define stack_clear(O) stack_pop((O) ,NULL) 
+#define SO(O) stack_ref((O) ,NULL) 
+#define SS(O,D) stack_set_m((O) ,(D) ,NULL) 
+#define env_layer(O) (lcdr(O) ) 
+#define env_previous(O) (lcar(O) ) 
+#define env_replace_layer_m(O,E) (lcdr_set_m((O) ,(E) ) ) 
+#define env_root_p(O) (environment_p(O) &&null_p(env_previous(O) ) ) 
+#define env_empty(F) (env_new_imp(NIL,(F) ) ) 
+#define env_look(H,N,F) env_search((H) ,(N) ,false,(F) ) 
+#define LLF_NONE 0x00
+#define LLF_HORIZONTAL 0x01
+#define LLF_VERTICAL 0x02 \
+
+#define LLF_BASE2 0x02
+#define LLF_BASE8 0x08
+#define LLF_BASE16 0x0a
+#define LLF_BASE(O) flag2base(O)  \
+
+#define LLF_COMPLEXI 0x01
+#define LLF_COMPLEXJ 0x04
+#define LLF_COMPLEXK 0x05
+#define LLF_COMPLEX_P(O) ((O) &0x05) 
+#define LLF_COMPLEXITY(O) (((O) &1) |(LLF_COMPLEX_P(O) >>1) )  \
+
+#define LLF_IMAGINATE(O) (((O) &~2) |(((O) &2) <<1) )  \
+ \
+
+#define LLF_NEGATIVE 0x10
+#define LLF_POSITIVE 0x20
+#define LLF_SIGN 0x30 \
+
+#define LLF_DOT 0x40
+#define LLF_SLASH 0x80
+#define LLF_RATIO 0xc0 \
+
+#define LEXEME_TWINE 0
+#define LEXEME_LENGTH 1 \
+
+#define lexeme(O) ((Olexeme*) record_base(O) ) 
+#define lexeme_twine(O) (record_cell((O) ,LEXEME_TWINE) ) 
+#define lexeme_set_twine_m(O,D) (record_set_cell_m((O) ,LEXEME_TWINE,(D) ) ) 
+#define lexeme_byte(O,I) (rope_byte(lexeme_twine(O) , \
+lexeme(O) ->tboffset+(I) ) ) 
+#define SYNTAX_DATUM 0
+#define SYNTAX_NOTE 1
+#define SYNTAX_START 2
+#define SYNTAX_END 3
+#define SYNTAX_VALID 4
+#define SYNTAX_LENGTH 5 \
+
+#define syntax_datum(O) (record_cell((O) ,SYNTAX_DATUM) ) 
+#define syntax_end(O) (record_cell((O) ,SYNTAX_END) ) 
+#define syntax_note(O) (record_cell((O) ,SYNTAX_NOTE) ) 
+#define syntax_start(O) (record_cell((O) ,SYNTAX_START) ) 
+#define syntax_valid(O) (record_cell((O) ,SYNTAX_VALID) )  \
+
+#define syntax_new(D,S,E,F) syntax_new_imp((D) ,NIL,(S) ,(E) ,true,(F) ) 
+#define syntax_invalid(D,S,E,F) syntax_new_imp((D) ,NIL,(S) ,(E) ,false,(F) ) 
+#define Sym_APPLICATIVE (symbol_new_const("APPLICATIVE") ) 
+#define Sym_COMBINE_APPLY (symbol_new_const("COMBINE-APPLY") ) 
+#define Sym_COMBINE_BUILD (symbol_new_const("COMBINE-BUILD") ) 
+#define Sym_COMBINE_DISPATCH (symbol_new_const("COMBINE-DISPATCH") ) 
+#define Sym_COMBINE_FINISH (symbol_new_const("COMBINE-FINISH") ) 
+#define Sym_COMBINE_OPERATE (symbol_new_const("COMBINE-OPERATE") ) 
+#define Sym_CONDITIONAL (symbol_new_const("CONDITIONAL") ) 
+#define Sym_DEFINITION (symbol_new_const("DEFINITION") ) 
+#define Sym_EVALUATE_DISPATCH (symbol_new_const("EVALUATE-DISPATCH") ) 
+#define Sym_SAVE_AND_EVALUATE (symbol_new_const("SAVE-ENVIRONMENT-AND-EVALUATE") ) 
+#define Sym_ENVIRONMENT_P (symbol_new_const("ENVIRONMENT?") ) 
+#define Sym_ENVIRONMENT_M (symbol_new_const("ENVIRONMENT!") ) 
+#define Sym_EVALUATE (symbol_new_const("EVALUATE") ) 
+#define Sym_OPERATIVE (symbol_new_const("OPERATIVE") ) 
+#define note(O) (lcar(O) ) 
+#define note_pair(O) (lcdr(O) ) 
+#define note_car(O) (lcar(note_pair(O) ) ) 
+#define note_cdr(O) (lcdr(note_pair(O) ) ) 
+#define note_set_car_m(O,V) (lcar_set_m(note_pair(O) ,(V) ) ) 
+#define note_set_cdr_m(O,V) (lcdr_set_m(note_pair(O) ,(V) ) ) 
+#define closure_formals(O) (lcar(O) ) 
+#define closure_environment(O) (lcadr(O) ) 
+#define closure_body(O) (lcaddr(O) ) 
+#define primitive(O) (fix_value(lcar(O) ) ) 
+#define primitive_label(O) (lcdr(O) ) 
+#define primitive_base(O) (&Iprimitive[primitive(O) ]) 
+#define primitive_applicative_p(O) (primitive_p(O) &&primitive_base(O) ->applicative) 
+#define primitive_operative_p(O) (primitive_p(O) &&!primitive_base(O) ->applicative) 
+#define LEXAR_STARTER 0
+#define LEXAR_ITERATOR 1
+#define LEXAR_PEEKED_TWINE 2
+#define LEXAR_PEEKED_RUNE 3
+#define LEXAR_BACKPUT_TWINE 4
+#define LEXAR_BACKPUT_RUNE 5
+#define LEXAR_LENGTH 6 \
+
+#define lexar(O) ((Olexical_analyser*) record_base(O) ) 
+#define lexar_starter(O) (record_cell((O) ,LEXAR_STARTER) ) 
+#define lexar_iterator(O) (record_cell((O) ,LEXAR_ITERATOR) ) 
+#define lexar_peeked_rune(O) (record_cell((O) ,LEXAR_PEEKED_RUNE) ) 
+#define lexar_peeked_twine(O) (record_cell((O) ,LEXAR_PEEKED_TWINE) ) 
+#define lexar_backput_rune(O) (record_cell((O) ,LEXAR_BACKPUT_RUNE) ) 
+#define lexar_backput_twine(O) (record_cell((O) ,LEXAR_BACKPUT_TWINE) )  \
+
+#define lexar_set_starter_m(O,D) (record_set_cell_m((O) ,LEXAR_STARTER,(D) ) ) 
+#define lexar_set_iterator_m(O,D) (record_set_cell_m((O) ,LEXAR_ITERATOR,(D) ) ) 
+#define lexar_set_peeked_rune_m(O,D)  \
+(record_set_cell_m((O) ,LEXAR_PEEKED_RUNE,(D) ) ) 
+#define lexar_set_peeked_twine_m(O,D)  \
+(record_set_cell_m((O) ,LEXAR_PEEKED_TWINE,(D) ) ) 
+#define lexar_set_backput_rune_m(O,D)  \
+(record_set_cell_m((O) ,LEXAR_BACKPUT_RUNE,(D) ) ) 
+#define lexar_set_backput_twine_m(O,D)  \
+(record_set_cell_m((O) ,LEXAR_BACKPUT_TWINE,(D) ) ) 
+#define lexar_reset(L,R) do{ \
+lexar_set_starter_m((L) ,rope_iter_twine((R) ) ) ; \
+lexar(L) ->tbstart= rope_iter(R) ->tboffset; \
+lexar(L) ->cpstart= rope_iter(R) ->cpoffset; \
+}while(0) 
+#define RIS(O,V) (rune(O) ==(V) ) 
+#define CIS(O,V) (lexeme(O) ->cat==(V) )  \
+
+#define lexar_space_p(O) (!rune_failure_p(O) && \
+(RIS((O) ,' ') ||RIS((O) ,'\t') || \
+RIS((O) ,'\r') ||RIS((O) ,'\n') ) ) 
+#define lexar_opening_p(O) (!rune_failure_p(O) && \
+(RIS((O) ,'(') ||RIS((O) ,'{') ||RIS((O) ,'[') ) ) 
+#define lexar_closing_p(O) (!rune_failure_p(O) && \
+(RIS((O) ,')') ||RIS((O) ,'}') ||RIS((O) ,']') ) ) 
+#define lexar_terminator_p(O) (eof_p(O) || \
+lexar_space_p(O) ||lexar_opening_p(O) ||lexar_closing_p(O) )  \
+
+#define lexeme_terminator_p(O) (CIS((O) ,LEXICAT_END) || \
+CIS((O) ,LEXICAT_OPEN) ||CIS((O) ,LEXICAT_CLOSE) || \
+CIS((O) ,LEXICAT_SPACE) ) 
+#define lexar_another(V,I,T,A,L,R,F) do{ \
+ \
+ \
+(V) = lexar_peek((I) ,(F) ) ; \
+if(eof_p(V) )  \
+goto L; \
+else if(!(A) &&rune_failure_p(V) )  \
+return lexar_append((I) ,(R) ,LEXICAT_INVALID,LLF_NONE,(F) ) ; \
+else if(T)  \
+(V) = lexar_take((I) ,(F) ) ; \
+}while(0) 
+#define lexar_detect_octal(V,I,C,R,F) { \
+lexar_another((V) ,(I) ,true,true,LEXAR_premature_eof,(R) ,(F) ) ; \
+if(!rune_failure_p(V) && \
+rune(V) >='0'&&rune(V) <='7') { \
+lexar_take((I) ,(F) ) ; \
+continue; \
+} \
+(C) = LEXICAT_INVALID; \
+break; \
+} \
+
+#define lexar_detect_hexadecimal(V,I,C,R,F) { \
+int32_t v; \
+lexar_another((V) ,(I) ,true,true,LEXAR_premature_eof,(R) ,(F) ) ; \
+v= rune(V) ; \
+if(!rune_failure_p(V) &&((v>='0'&&v<='9') || \
+(v>='a'&&v<='f') ||(v>='A'&&v<='F') ) ) { \
+lexar_take((I) ,(F) ) ; \
+continue; \
+} \
+(C) = LEXICAT_INVALID; \
+break; \
+}
+#define UCP_INFINITY 0x211e
+#define UCP_NAN_0 0x2116
+#define UCP_NAN_1 0x20e0
+#define CANNOT -1
+#define CAN 0
+#define MUST 1 \
+
+#define parse_fail(S,E,L,F) do{ \
+cell _x= cons(fix((E) ) ,(L) ,(F) ) ; \
+SS((S) ,cons(_x,SO(S) ,(F) ) ) ; \
+(L) = lcdr(lcar(SO(S) ) ) ; \
+}while(0) 
+#define hexscii_to_int(O) (((O) >='a') ?(O) -'a': \
+((O) >='A') ?(O) -'A':(O) -'0') 
+#define int_to_hexscii(O,C) ((O) <10?(O) +'0':((C) ?(O) +'A':(O) +'a') ) 
+#define ACC Accumulator
+#define ARGS Arguments
+#define CLINK Control_Link
+#define ENV Environment
+#define EXPR Expression
+#define evaluate_desyntax(O) (syntax_p(O) ?syntax_datum(O) :(O) ) 
+#define evaluate_incompatible(L,F) do{ \
+lprint("incompatibility at line %d\n",(L) ) ; \
+siglongjmp(*(F) ,LERR_INCOMPATIBLE) ; \
+}while(0) 
+#define LOG(cmd) cmd
+#define DONTLOG(cmd) do{printf("%s\n",#cmd) ;cmd;}while(0)  \
+
+#define Sym_VOV_ARGS (symbol_new_const("vov/args") ) 
+#define Sym_VOV_ARGUMENTS (symbol_new_const("vov/arguments") ) 
+#define Sym_VOV_CONT (symbol_new_const("vov/cont") ) 
+#define Sym_VOV_CONTINUATION (symbol_new_const("vov/continuation") ) 
+#define Sym_VOV_ENV (symbol_new_const("vov/env") ) 
+#define Sym_VOV_ENVIRONMENT (symbol_new_const("vov/environment") )  \
+
+#define save_vov_informal(O,S) do{ \
+if(!null_p(SO(S) ) )  \
+evaluate_incompatible(__LINE__,failure) ; \
+else \
+LOG(SS((S) ,(O) ) ) ; \
+}while(0) 
+#define primitive_predicate(O) do{ \
+ACC= lcar(ARGS) ; \
+ARGS= lcdr(ARGS) ; \
+assert(null_p(ARGS) ) ; \
+ACC= predicate(O(ACC) ) ; \
+}while(0) ;break
+#define validated_argument(VAR,ARGS,NULLABLE,PREDICATE,FAILURE) do{ \
+(VAR) = lcar(ARGS) ; \
+(ARGS) = lcdr(ARGS) ; \
+if((!(NULLABLE) &&null_p(VAR) ) ||!PREDICATE(VAR) )  \
+evaluate_incompatible(__LINE__,(FAILURE) ) ; \
+}while(0)  \
+
+#define serial_printable_p(O) ((O) >=' '&&(O) <0x7f) 
+#define SERIAL_SILENT 0
+#define SERIAL_HUMAN 1
+#define SERIAL_ROUND 2
+#define SERIAL_DETAIL 3
+#define serial_append(B,C,L,F) do{ \
+if(LDEBUG_P&&null_p(B) )  \
+for(int _i= 0;_i<(L) ;_i++)  \
+lput((C) [_i]) ; \
+else \
+serial_append_imp((B) ,(C) ,(L) ,(F) ) ; \
+}while(0) 
+#define WARN() fprintf(stderr,"WARNING: You probably don't want to do that.\n") ;
+
+#line 116 "lossless.w"
+
+/*6:*/
+#line 141 "lossless.w"
+
+typedef intptr_t cell;
+typedef uintptr_t digit;
+
+#if SIZE_MAX <= 0xfffful
+/*10:*/
+#line 243 "lossless.w"
+
+#define CELL_BITS  16
+#define CELL_BYTES 2
+#define CELL_SHIFT 2
+#define WIDE_BITS  32
+#define WIDE_BYTES 4
+#define FIX_MIN    (-0x7f - 1) 
+#define FIX_MAX    0x7f
+#define FIX_MASK   0xff
+#define FIX_SHIFT  8
+#define FIX_BASE2  8
+#define FIX_BASE8  3
+#define FIX_BASE10 3
+#define FIX_BASE16 2
+typedef union{
+struct{
+cell low;
+cell high;
+};
+int64_t value;
+}wide;
+typedef int8_t fixed;
+typedef int8_t half;
+
+/*:10*/
+#line 146 "lossless.w"
+
+#elif SIZE_MAX <= 0xfffffffful
+/*9:*/
+#line 216 "lossless.w"
+
+#define CELL_BITS  32
+#define CELL_BYTES 4
+#define CELL_SHIFT 3
+#define WIDE_BITS  64
+#define WIDE_BYTES 8
+#define FIX_MIN    (-0x7fffffl - 1) 
+#define FIX_MAX    0x7fffffl
+#define FIX_MASK   0xffffffl
+#define FIX_SHIFT  8
+#define FIX_BASE2  24
+#define FIX_BASE8  8
+#define FIX_BASE10 8
+#define FIX_BASE16 6
+typedef union{
+struct{
+cell low;
+cell high;
+};
+int64_t value;
+}wide;
+typedef int32_t fixed;
+typedef int16_t half;
+
+/*:9*/
+#line 148 "lossless.w"
+
+#elif SIZE_MAX <= 0xfffffffffffffffful
+/*8:*/
+#line 186 "lossless.w"
+
+#define CELL_BITS  64
+#define CELL_BYTES 8
+#define CELL_SHIFT 4
+#define WIDE_BITS  128
+#define WIDE_BYTES 16
+#define FIX_MIN    (-0x7fffffffll - 1) 
+#define FIX_MAX    0x7fffffffll
+#define FIX_MASK   0xffffffffll
+#define FIX_SHIFT  32
+#define FIX_BASE2  32
+#define FIX_BASE8  11
+#define FIX_BASE10 10
+#define FIX_BASE16 8
+typedef union{
+struct{
+cell low;
+cell high;
+};
+struct{
+char b[16];
+}value;
+}wide;
+typedef int32_t fixed;
+typedef int32_t half;
+
+/*:8*/
+#line 150 "lossless.w"
+
+#else
+#error Tiny computer.
+#endif
+
+
+/*:6*//*7:*/
+#line 160 "lossless.w"
+
+#define CELL_MASK (~(WIDE_BYTES - 1))
+
+#define BYTE_BITS    8
+#define BYTE_BYTES   1
+#define BYTE         0xff
+#define TAG_BYTES    1
+
+#define DIGIT_MAX    UINTPTR_MAX
+#define HALF_MIN     (INTPTR_MIN / 2)
+#define HALF_MAX     (INTPTR_MAX / 2)
+#define INTERN_BYTES (WIDE_BYTES - 1)
+
+
+typedef intptr_t cell;
+typedef uintptr_t digit;
+typedef struct{
+char buffer[INTERN_BYTES];
+unsigned char length;
+}Ointern;
+
+/*:7*//*13:*/
+#line 295 "lossless.w"
+
+typedef enum{
+LERR_NONE,
+LERR_AMBIGUOUS,
+LERR_DOUBLE_TAIL,
+LERR_EMPTY_TAIL,
+LERR_EOF,
+LERR_EXISTS,
+LERR_HEAVY_TAIL,
+LERR_IMPROPER,
+LERR_INCOMPATIBLE,
+LERR_INTERNAL,
+LERR_INTERRUPT,
+LERR_LIMIT,
+LERR_LISTLESS_TAIL,
+LERR_MISMATCH,
+LERR_MISSING,
+LERR_NONCHARACTER,
+LERR_OOM,
+LERR_OVERFLOW,
+LERR_SYNTAX,
+LERR_UNCLOSED_OPEN,
+LERR_UNCOMBINABLE,
+LERR_UNDERFLOW,
+LERR_UNIMPLEMENTED,
+LERR_UNOPENED_CLOSE,
+LERR_UNPRINTABLE,
+LERR_UNSCANNABLE,
+LERR_LENGTH
+}Verror;
+
+/*:13*//*14:*/
+#line 330 "lossless.w"
+
+typedef struct{
+char*message;
+}Oerror;
+
+/*:14*//*25:*/
+#line 610 "lossless.w"
+
+typedef unsigned char Otag;
+typedef struct{
+cell sin,dex;
+}Oatom;
+
+/*:25*//*31:*/
+#line 802 "lossless.w"
+
+struct Oheap{
+Oatom*free;
+struct Oheap*next,*pair;
+Otag tag[];
+};
+typedef struct Oheap Oheap;
+
+/*:31*//*44:*/
+#line 1224 "lossless.w"
+
+struct Osegment{
+struct Osegment*next,*prev;
+half length,stride;
+cell owner;
+
+char address[];
+
+};
+typedef struct Osegment Osegment;
+
+/*:44*//*53:*/
+#line 1474 "lossless.w"
+
+enum{
+LGCR_TMPSIN,LGCR_TMPDEX,LGCR_TMPIER,
+LGCR_NULL,
+LGCR_SYMBUFFER,LGCR_SYMTABLE,
+LGCR_STACK,
+LGCR_PROTECT_0,LGCR_PROTECT_1,LGCR_PROTECT_2,LGCR_PROTECT_3,
+LGCR_EXPRESSION,LGCR_ENVIRONMENT,LGCR_ACCUMULATOR,LGCR_ARGUMENTS,
+LGCR_CLINK,
+LGCR_OPERATORS,
+LGCR_USER,
+LGCR_COUNT
+};
+
+/*:53*//*84:*/
+#line 2032 "lossless.w"
+
+typedef uint32_t Vhash;
+
+/*:84*//*97:*/
+#line 2279 "lossless.w"
+
+typedef struct{
+Vhash hash;
+char buffer[];
+}Osymbol;
+
+typedef struct{
+char*buf;
+int length;
+}Osymbol_compare;
+
+/*:97*//*125:*/
+#line 2894 "lossless.w"
+
+typedef enum{
+UTFIO_COMPLETE,
+UTFIO_INVALID,
+UTFIO_BAD_CONTINUATION,
+
+UTFIO_BAD_STARTER,
+
+UTFIO_OVERLONG,
+UTFIO_SURROGATE,
+UTFIO_PROGRESS,
+
+UTFIO_EOF
+}Vutfio_parse;
+
+/*:125*//*126:*/
+#line 2930 "lossless.w"
+
+typedef struct{
+int32_t value;
+char offset,remaining;
+char buf[4];
+Vutfio_parse status;
+}Outfio;
+
+/*:126*//*134:*/
+#line 3124 "lossless.w"
+
+typedef struct{
+long cplength;
+long glength;
+char buffer[];
+}Orope;
+
+/*:134*//*141:*/
+#line 3261 "lossless.w"
+
+typedef struct{
+int bvalue;
+long tboffset;
+long boffset;
+long cpoffset;
+Outfio cp;
+}Orope_iter;
+
+/*:141*//*178:*/
+#line 3815 "lossless.w"
+
+typedef enum{
+LEXICAT_NONE,
+LEXICAT_CLOSE,
+LEXICAT_CONSTANT,
+LEXICAT_CURIOUS,
+LEXICAT_DELIMITER,
+LEXICAT_DOT,
+LEXICAT_END,
+LEXICAT_ESCAPED_STRING,
+LEXICAT_ESCAPED_SYMBOL,
+LEXICAT_NUMBER,
+LEXICAT_OPEN,
+LEXICAT_RAW_STRING,
+LEXICAT_RAW_SYMBOL,
+LEXICAT_RECURSE_HERE,
+LEXICAT_RECURSE_IS,
+LEXICAT_SPACE,
+LEXICAT_SYMBOL,
+LEXICAT_INVALID
+}Vlexicat;
+
+/*:178*//*179:*/
+#line 3848 "lossless.w"
+
+typedef struct{
+long tboffset;
+long cpstart;
+long blength,cplength;
+char flags;
+Vlexicat cat;
+}Olexeme;
+
+/*:179*//*186:*/
+#line 4083 "lossless.w"
+
+typedef enum{
+/*274:*/
+#line 6424 "lossless.w"
+
+PRIMITIVE_BREAK,
+PRIMITIVE_CAR,
+PRIMITIVE_CDR,
+PRIMITIVE_CONS,
+PRIMITIVE_CURRENT_ENVIRONMENT,
+PRIMITIVE_DEFINE_M,
+PRIMITIVE_DO,
+PRIMITIVE_DUMP,
+PRIMITIVE_EVAL,
+PRIMITIVE_IF,
+PRIMITIVE_LAMBDA,
+PRIMITIVE_NULL_P,
+PRIMITIVE_PAIR_P,
+PRIMITIVE_ROOT_ENVIRONMENT,
+PRIMITIVE_SET_M,
+PRIMITIVE_VOV,
+
+/*:274*//*287:*/
+#line 6663 "lossless.w"
+
+PRIMITIVE_NEW_TREE_PLAIN_NODE,
+PRIMITIVE_NEW_TREE_BIWARD_NODE,
+PRIMITIVE_NEW_TREE_SINWARD_NODE,
+PRIMITIVE_NEW_TREE_DEXWARD_NODE,
+PRIMITIVE_TREE_SIN_HAS_THREAD_P,
+PRIMITIVE_TREE_DEX_HAS_THREAD_P,
+PRIMITIVE_TREE_DEX_IS_LIVE_P,
+PRIMITIVE_TREE_SIN_IS_LIVE_P,
+PRIMITIVE_TREE_P,
+PRIMITIVE_TREE_PLAIN_P,
+PRIMITIVE_TREE_RETHREAD_M,
+PRIMITIVE_TREE_SIN_THREADABLE_P,
+PRIMITIVE_TREE_DEX_THREADABLE_P,
+PRIMITIVE_TREE_DATUM,
+
+PRIMITIVE_NEW_ROPE_PLAIN_NODE,
+PRIMITIVE_ROPE_P,
+PRIMITIVE_ROPE_PLAIN_P,
+PRIMITIVE_ROPE_SIN_THREADABLE_P,
+PRIMITIVE_ROPE_DEX_THREADABLE_P,
+PRIMITIVE_ROPE_SEGMENT,
+
+/*:287*/
+#line 4085 "lossless.w"
+
+PRIMITIVE_LENGTH
+}Vprimitive;
+
+typedef struct{
+char*label;
+cell box;
+bool applicative;
+char min,max;
+}Oprimitive;
+
+
+#if 0 
+
+[PRIMITIVE_FOO]= {&Sym_FOO,NIL,...},
+shared Osegment Sym_FOO= {.address= "foo"};
+#endif
+
+/*:186*//*190:*/
+#line 4183 "lossless.w"
+
+typedef struct{
+long tbstart;
+long blength;
+long cpstart;
+long cplength;
+}Olexical_analyser;
+
+/*:190*/
+#line 117 "lossless.w"
+
+/*21:*/
+#line 445 "lossless.w"
+
+void*mem_alloc(void*,size_t,size_t,sigjmp_buf*);
+
+/*:21*//*29:*/
+#line 735 "lossless.w"
+
+cell fix(intmax_t);
+
+/*:29*//*34:*/
+#line 829 "lossless.w"
+
+cell lcar(cell);
+cell lcdr(cell);
+Otag ltag(cell);
+void lcar_set_m(cell,cell);
+void lcdr_set_m(cell,cell);
+void heap_init_sweeping(Oheap*,Oheap*);
+void heap_init_compacting(Oheap*,Oheap*,Oheap*);
+Oheap*heap_enlarge(Oheap*,sigjmp_buf*);
+cell heap_alloc(Oheap*,sigjmp_buf*);
+cell atom(Oheap*,cell,cell,Otag,sigjmp_buf*);
+
+/*:34*//*46:*/
+#line 1244 "lossless.w"
+
+Osegment*segment_alloc_imp(Osegment*,long,long,long,long,sigjmp_buf*);
+cell segment_init(Osegment*,cell);
+cell segment_new_imp(Oheap*,long,long,long,long,Otag,sigjmp_buf*);
+void segment_release_imp(Osegment*,bool);
+void segment_release_m(cell,bool);
+cell segment_resize_m(cell,long,long,sigjmp_buf*);
+
+/*:46*//*56:*/
+#line 1531 "lossless.w"
+
+size_t gc_compacting(Oheap*,bool);
+void gc_disown_segments(Oheap*);
+cell gc_mark(Oheap*,cell,bool,cell*,size_t*);
+size_t gc_reclaim_heap(Oheap*);
+void gc_release_segments(Oheap*);
+size_t gc_sweeping(Oheap*,bool);
+
+/*:56*//*78:*/
+#line 1896 "lossless.w"
+
+cell array_new_imp(long,cell,Otag,sigjmp_buf*);
+cell array_grow(cell,long,cell,sigjmp_buf*);
+cell array_grow_m(cell,long,cell,sigjmp_buf*);
+cell array_ref(cell,long);
+void array_set_m(cell,long,cell);
+
+/*:78*//*85:*/
+#line 2035 "lossless.w"
+
+Vhash hash_cstr(char*,long*,sigjmp_buf*);
+Vhash hash_buffer(char*,long,sigjmp_buf*);
+
+/*:85*//*88:*/
+#line 2089 "lossless.w"
+
+cell keytable_new(long,sigjmp_buf*);
+cell keytable_enlarge_m(cell,Vhash(*)(cell,sigjmp_buf*),sigjmp_buf*);
+void keytable_remove_m(cell,long);
+void keytable_save_m(cell,long,cell);
+int keytable_search(cell,Vhash,int(*)(cell,void*,sigjmp_buf*),void*,sigjmp_buf*);
+
+/*:88*//*96:*/
+#line 2255 "lossless.w"
+
+int symbol_table_cmp(cell,void*,sigjmp_buf*);
+long symbol_table_search(Vhash,Osymbol_compare,sigjmp_buf*);
+Vhash symbol_table_rehash(cell s,sigjmp_buf*);
+cell symbol_new_buffer(char*,long,sigjmp_buf*);
+cell symbol_new_imp(Vhash,char*,long,sigjmp_buf*);
+
+/*:96*//*107:*/
+#line 2514 "lossless.w"
+
+cell anytree_next_sin(cell,sigjmp_buf*);
+cell anytree_next_dex(cell,sigjmp_buf*);
+cell dryad_node_new(bool,bool,bool,cell,cell,cell,sigjmp_buf*);
+cell treeish_clone(cell,sigjmp_buf*failure);
+cell treeish_edge_imp(cell,bool,sigjmp_buf*);
+
+/*:107*//*111:*/
+#line 2601 "lossless.w"
+
+void treeish_rethread_imp(cell,cell,Otag,cell);
+cell treeish_rethread_m(cell,bool,bool,sigjmp_buf*);
+
+/*:111*//*114:*/
+#line 2688 "lossless.w"
+
+cell dlist_new(cell,sigjmp_buf*);
+cell dlist_append_datum_m(cell,cell,sigjmp_buf*);
+cell dlist_append_m(cell,cell);
+cell dlist_clone(cell,sigjmp_buf*);
+cell dlist_insert_datum_imp(cell,cell,bool,sigjmp_buf*);
+cell dlist_insert_imp(cell,cell,bool,sigjmp_buf*);
+cell dlist_remove_m(cell);
+void dlist_set_next_m(cell,cell);
+void dlist_set_prev_m(cell,cell);
+
+/*:114*//*121:*/
+#line 2830 "lossless.w"
+
+cell record_new(cell,int,int,sigjmp_buf*);
+
+/*:121*//*127:*/
+#line 2938 "lossless.w"
+
+Vutfio_parse utfio_read(Outfio*,char);
+Vutfio_parse utfio_reread(Outfio*,char);
+Outfio utfio_scan_start(void);
+Outfio utfio_write(int32_t);
+
+/*:127*//*132:*/
+#line 3065 "lossless.w"
+
+cell rune_new_utfio(Outfio,sigjmp_buf*);
+
+/*:132*//*135:*/
+#line 3131 "lossless.w"
+
+cell rope_node_new_clone(bool,bool,cell,cell,cell,sigjmp_buf*);
+cell rope_node_new_length(bool,bool,long,cell,cell,sigjmp_buf*);
+cell rope_new_ascii(bool,bool,char*,long,sigjmp_buf*);
+cell rope_new_buffer(bool,bool,const char*,long,sigjmp_buf*);
+cell rope_new_utfo(bool,bool,char*,long,sigjmp_buf*);
+
+/*:135*//*142:*/
+#line 3270 "lossless.w"
+
+cell rope_iterate_start(cell,long,sigjmp_buf*);
+int rope_iterate_next_byte(cell,sigjmp_buf*);
+cell rope_iterate_next_utfo(cell,sigjmp_buf*);
+
+/*:142*//*147:*/
+#line 3372 "lossless.w"
+
+void stack_push(cell,sigjmp_buf*);
+cell stack_pop(long,sigjmp_buf*);
+cell stack_ref(long,sigjmp_buf*);
+void stack_set_m(long,cell,sigjmp_buf*);
+cell stack_ref_abs(long,sigjmp_buf*);
+void stack_reserve(int,sigjmp_buf*);
+void stack_protect(int,...);
+
+/*:147*//*161:*/
+#line 3535 "lossless.w"
+
+Vhash env_rehash(cell,sigjmp_buf*);
+void env_clear(cell,cell,sigjmp_buf*);
+cell env_define(cell,cell,cell,sigjmp_buf*);
+cell env_extend(cell,sigjmp_buf*);
+cell env_here(cell,cell,sigjmp_buf*);
+int env_match(cell,void*,sigjmp_buf*);
+cell env_new_imp(cell,sigjmp_buf*);
+cell env_search(cell,cell,bool,sigjmp_buf*);
+cell env_set(cell,cell,cell,sigjmp_buf*);
+cell env_set_imp(cell,cell,cell,bool,sigjmp_buf*);
+cell env_unset(cell,cell,sigjmp_buf*);
+
+/*:161*//*184:*/
+#line 4030 "lossless.w"
+
+cell closure_new(bool,cell,cell,cell,sigjmp_buf*);
+
+/*:184*//*191:*/
+#line 4191 "lossless.w"
+
+cell lexar_append(int,int,Vlexicat,int,sigjmp_buf*);
+cell lexar_clone(cell,sigjmp_buf*);
+cell lexar_peek(int,sigjmp_buf*);
+void lexar_putback(int);
+cell lexar_start(cell,sigjmp_buf*);
+cell lexar_take(int,sigjmp_buf*);
+cell lex_rope(cell,sigjmp_buf*);
+cell lexar_token(int,int,sigjmp_buf*);
+
+/*:191*//*228:*/
+#line 5195 "lossless.w"
+
+cell parse(cell,bool*,sigjmp_buf*);
+cell transform_lexeme_segment(cell,long,long,bool,int,bool*,
+sigjmp_buf*);
+char parse_ascii_hex(cell,sigjmp_buf*);
+
+/*:228*//*248:*/
+#line 5789 "lossless.w"
+
+void evaluate(cell,sigjmp_buf*);
+void evaluate_program(cell,sigjmp_buf*);
+void combine(sigjmp_buf*);
+void validate_formals(bool,sigjmp_buf*);
+void validate_arguments(sigjmp_buf*);
+void validate_operative(sigjmp_buf*);
+void validate_primitive(sigjmp_buf*);
+
+/*:248*//*281:*/
+#line 6572 "lossless.w"
+
+void breakpoint(void);
+
+/*:281*//*295:*/
+#line 6854 "lossless.w"
+
+void gc_serial(cell,cell);
+void serial(cell,int,int,cell,cell*,sigjmp_buf*);
+void serial_append_imp(cell,char*,int,sigjmp_buf*);
+int serial_cycle(cell,cell);
+char*serial_deduplicate(cell,int,cell,cell,sigjmp_buf*);
+void serial_escape(char*,int,cell,sigjmp_buf*);
+void serial_imp(cell,int,int,bool,cell,cell,sigjmp_buf*);
+void serial_rope(cell,int,int,cell,cell,sigjmp_buf*);
+
+/*:295*//*320:*/
+#line 7504 "lossless.w"
+
+int high_bit(digit);
+
+/*:320*//*331:*/
+#line 7716 "lossless.w"
+
+cell lapi_Accumulator(cell);
+cell lapi_User_Register(cell);
+
+/*:331*//*335:*/
+#line 7781 "lossless.w"
+
+void mem_init(void);
+int lprint(char*,...);
+int lput(int);
+
+/*:335*/
+#line 118 "lossless.w"
+
+/*16:*/
+#line 367 "lossless.w"
+
+extern Oerror Ierror[];
+
+/*:16*//*20:*/
+#line 429 "lossless.w"
+
+extern unique bool Interrupt;
+
+/*:20*//*33:*/
+#line 821 "lossless.w"
+
+extern shared Oheap*Sheap;
+extern unique Oheap*Theap;
+
+/*:33*//*76:*/
+#line 1885 "lossless.w"
+
+extern shared cell Null_Array;
+
+/*:76*//*149:*/
+#line 3386 "lossless.w"
+
+extern unique long StackP;
+
+/*:149*//*247:*/
+#line 5780 "lossless.w"
+
+extern unique cell Accumulator;
+extern unique cell Environment;
+
+/*:247*//*325:*/
+#line 7559 "lossless.w"
+
+cell lapi_NIL(void);
+cell lapi_FALSE(void);
+cell lapi_TRUE(void);
+cell lapi_VOID(void);
+cell lapi_EOF(void);
+cell lapi_UNDEFINED(void);
+
+/*:325*//*327:*/
+#line 7577 "lossless.w"
+
+bool lapi_null_p(cell);
+bool lapi_false_p(cell);
+bool lapi_true_p(cell);
+bool lapi_pair_p(cell);
+bool lapi_symbol_p(cell);
+
+cell lapi_cons(bool,cell,cell,sigjmp_buf*);
+cell lapi_car(cell,sigjmp_buf*);
+cell lapi_cdr(cell,sigjmp_buf*);
+void lapi_set_car_m(cell,cell,sigjmp_buf*);
+void lapi_set_cdr_m(cell,cell,sigjmp_buf*);
+
+/*:327*/
+#line 119 "lossless.w"
+
+
+/*:3*/
